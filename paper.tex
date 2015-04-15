@@ -238,53 +238,177 @@ propagates the answer \emph{ANS} (line 13).
 \section{Performance Analysis}
 
 We now present experimental results about the usage of the batched
-scheduling on the \emph{NS}, \emph{SS} and \emph{FS} designs. For the
-sake of simplicity, for the \emph{SS} and \emph{FS} designs, we will be
-presenting only the results for the lock free \emph{LF2} proposal
-(\emph{SS}$_{LF_2}$ and \emph{FS}$_{LF_2}$), since they were the ones
-that presented the lowest overheads in the previous chapters. For the
-\emph{FS}$_{LF_2}$ design, we will use it with the \emph{PCC} procedure
-enabled.
+scheduling on the \emph{NS}, \emph{SS} and \emph{FS} designs. The
+environment for our experiments was a machine with 32-Core AMD Opteron
+(TM) Processor 6274 (2 sockets with 16 cores each) with 32G of main
+memory, each processor with caches $L1$, $L2$ and $L3$ respectively
+with the sizes of 64K, 2048K and 6144K, running the Linux kernel is
+the 3.16.7-200.fc20.x86\_64, with Yap 6.3 compiled with gcc 4.8.
 
-Concerning the benchmarks, we will be using the same five sets of
-benchmarks presented before with the same number of runs per
-benchmark, the same formula to calculate the overhead ratios, and the
-same worst case scenario approach, where all threads begin with the
-same query goal. To put the results in perspective, we experimented
-with $1$, $8$, $16$, $24$ and $32$ threads (the maximum number of
-cores available in our machine) with batched and local scheduling.
+We used five sets of benchmarks. The \emph{Large Joins} and
+\emph{WordNet} sets were obtained from the OpenRuleBench
+project~\cite{Liang-09}; the \emph{Model Checking} set includes three
+different specifications and transition relation graphs usually used
+in model checking applications; the \emph{Path Left} and \emph{Path
+  Right} sets implement two recursive definitions of the well-known
+$path/2$ predicate, that computes the transitive closure in a graph,
+using several different configurations of $edge/2$ facts. We
+experimented graphs with the \emph{BTree} configuration with depth 17,
+the \emph{Pyramid} and \emph{Cycle} configurations with depth 2000 and
+the \emph{Grid} configuration with depth 35. 
+
+In order to have a deeper insight on the behavior of each benchmark,
+and therefore clarify some of the results that are presented next, we
+first characterize the benchmarks. The columns in
+Table~\ref{tab_benchs} have the following meaning: (i) {\bf calls:} is
+the number of different calls to tabled subgoals. It corresponds to
+the number of paths in the subgoal tries. (ii) {\bf trie nodes:} is
+the total number of trie nodes allocated in the corresponding
+subgoal/answer trie structures. (iii) {\bf trie depth:} is the
+minimum/average/maximum number of trie node levels required to
+represent a path in the corresponding subgoal/answer trie
+structures. Trie structures with smaller average values are more
+amenable to higher lock contention. (iv) {\bf unique:} is the number
+of different tabled answers found. It corresponds to the number of
+paths in the answer tries. (v) {\bf repeated:} is the number of
+redundant tabled answers found. (vi) {\bf NS:} is the average
+execution time, in seconds, of ten runs for 1 thread with the NS
+design without the TabMalloc memory allocator. In what follows, we
+will use these times as the base times when computing the overhead
+ratios for the other designs.
+
+By observing Table~\ref{tab_benchs}, the \emph{Mondial} benchmark,
+from the \emph{Large Joins} set, and the three \emph{Model
+  Checking} benchmarks seem to be the benchmarks least amenable to
+lock contention since they are the ones that find less unique answers
+and that have the deepest trie structures. In this regard, the
+\emph{Path Left} and \emph{Path Right} sets correspond to the
+opposite case. They find a huge number of answers and have very
+shallow trie structures. On the other hand, the \emph{WordNet} and
+\emph{Path Right} sets have the benchmarks with the largest number
+of different subgoal calls, which can reduce the probability of lock
+contention because answers can be found for different subgoal calls
+and therefore be inserted with minimum overlap. On the opposite side
+are the \emph{Join2} benchmark, from the \emph{Large Joins} set,
+and the \emph{Path Left} benchmarks, which have only a single tabled
+subgoal call.
+
+\begin{table}[ht]
+\centering
+\caption{Characteristics of the benchmark programs}
+\scalebox{0.82} { 
+\begin{tabular}{lrrccrrrcc}
+\hline\hline
+\multirow{2}{*}{\bf Bench}
+& \multicolumn{3}{c}{\bf Tabled Subgoals}
+&
+& \multicolumn{4}{c}{\bf Tabled Answers}
+& \multicolumn{1}{c}{\bf Time (sec)} \\ \cline{2-4}\cline{6-9}
+& \multicolumn{1}{c}{\bf calls}
+& \multicolumn{1}{c}{\bf trie nodes}
+& \multicolumn{1}{c}{\bf trie depth}
+&
+& \multicolumn{1}{c}{\bf unique}
+& \multicolumn{1}{c}{\bf repeated}
+& \multicolumn{1}{c}{\bf trie nodes}
+& \multicolumn{1}{c}{\bf trie depth}
+& \multicolumn{1}{c}{\bf NS} \\
+\hline
+\multicolumn{10}{l}{\bf Large Joins} \\
+\bf{Join2}    &       1 &       6 & 5/5/5 && 2,476,099 &         0 &
+2,613,660 &    5/5/5 &  2.85 \\
+\bf{Mondial}  &      35 &      42 & 3/4/4 &&     2,664 & 2,452,890 &
+   14,334 &    6/7/7 &  0.84 \\
+\hline
+\multicolumn{10}{l}{\bf WordNet} \\
+\bf{Clusters} & 117,659 & 235,319 & 2/2/2 &&   166,877 &   161,853 &
+284,536 &    1/1/1 &   0.83 \\
+\bf{Holo}     & 117,657 & 235,315 & 2/2/2 &&    74,838 &        54 &
+192,495 &    1/1/1 &   0.75 \\
+\bf{Hyper}    & 117,657 & 235,315 & 2/2/2 &&   698,472 &     8,658 &
+816,129 &    1/1/1 &   1.42 \\
+\bf{Hypo}     & 117,657 & 117,659 & 2/2/2 &&   698,472 &    20,341 &
+816,129 &    1/1/1 &   1.53 \\
+\bf{Mero}     & 117,657 & 117,659 & 2/2/2 &&    74,838 &        13 &
+192,495 &    1/1/1 &   0.74 \\
+\bf{Tropo}    & 117,657 & 235,315 & 2/2/2 &&       472 &         0 &
+118,129 &    1/1/1 &   0.66 \\
+\hline
+\multicolumn{10}{l}{\bf Model Checking} \\
+\bf{IProto}   &       1 &       6 & 5/5/5 &&   134,361 &   385,423 &
+1,554,896 &  4/51/67 & 2.70 \\
+\bf{Leader}   &       1 &       5 & 4/4/4 &&     1,728 &   574,786 &
+   41,788 & 15/80/97 & 3.51  \\
+\bf{Sieve}    &       1 &       7 & 6/6/6 &&       380 & 1,386,181 &
+    8,624 & 21/53/58 & 18.50 \\
+\hline
+\multicolumn{10}{l}{\bf Path Left} \\
+\bf{BTree}    &       1 &       3 & 2/2/2 && 1,966,082 &         0 &
+2,031,618 &    2/2/2 &   1.53 \\
+\bf{Cycle}    &       1 &       3 & 2/2/2 && 4,000,000 &     2,000 &
+4,002,001 &    2/2/2 &   3.52 \\
+\bf{Grid}     &       1 &       3 & 2/2/2 && 1,500,625 & 4,335,135 &
+1,501,851 &    2/2/2 &  1.93 \\
+\bf{Pyramid}  &       1 &       3 & 2/2/2 && 3,374,250 & 1,124,250 &
+3,377,250 &    2/2/2 &   3.08 \\
+\hline
+\multicolumn{10}{l}{\bf Path Right} \\
+\bf{BTree}    & 131,071 & 262,143 & 2/2/2 && 3,801,094 &         0 &
+3,997,700 &    1/2/2 &  2.33 \\
+\bf{Cycle}    &   2,001 &   4,003 & 2/2/2 && 8,000,000 &     4,000 &
+8,004,001 &    1/2/2 &  3.55 \\
+\bf{Grid}     &   1,226 &   2,453 & 2/2/2 && 3,001,250 & 8,670,270 &
+3,003,701 &    1/2/2 &  2.32 \\
+\bf{Pyramid}  &   3,000 &   6,001 & 2/2/2 && 6,745,501 & 2,247,001 &
+6,751,500 &    1/2/2 &  3.17 \\
+\hline\hline
+\end{tabular}}
+\label{tab_benchs}
+\end{table}
+
+Note that for the moment our goal is to evaluate the robustness of our
+implementation when exposed to \emph{worst case} scenarios. By
+focusing on \emph{worst case} scenarios, we show the lowest bounds in
+terms of performance that each design might achieve when applied/used
+with other real world applications/programs. Moreover, by testing the
+framework with worst case scenarios, we avoid the peculiarities of the
+program at hand and we try to focus on measuring the real value of our
+designs. Thus, we will follow a common approach to create worst case
+scenarios and we will run all threads starting with the same query
+goal. By doing this, it is expected that all threads will access the
+table space, to check/insert for subgoals and answers, at similar
+times, thus causing a huge stress on the same critical regions. To put
+the results in perspective, we experimented with $1$, $8$, $16$, $24$
+and $32$ threads (the maximum number of cores available in our
+machine) with local and batched scheduling on the five sets of
+benchmarks presented in the early subsection.
 
 Table~\ref{tab_batched_overhead} shows the overhead ratios, when
-compared with the \emph{NS} design with 1 thread (running with local
-scheduling, PtMalloc and without TabMalloc), for the \emph{NS},
-\emph{SS}$_{LF_2}$ and \emph{FS}$_{LF_2+PCC}$ designs (all running with
-TabMalloc and TcMalloc), when running 1, 8, 16, 24 and 32 threads with
-local and batched scheduling on the five sets of benchmarks (the
-results by set of benchmark can be seen in the
-Appendix.~\ref{app:batched}). For each design, the table has then two
-columns, a column with \textbf{Local} that shows results already
-presented in previous chapters for the local scheduling and a column
-with \textbf{Batched} that shows the new results with the batched
-scheduling. The overhead results presented in both \textbf{Local} and
-\textbf{Batched} columns use as base time the execution times
-presented in the \emph{NS} column of the Table~\ref{tab_benchs}.
+compared with the NS design with 1 thread (running with local
+scheduling), for the NS, SS and FS designs (all running TabMalloc),
+when running 1, 8, 16, 24 and 32 threads with local and batched
+scheduling on the five sets of benchmarks. For each design, the table
+has then two columns, a column with \emph{Local} that shows results
+for the local scheduling and a column with \emph{Batched} with results
+for batched scheduling. The overhead results presented in both
+\emph{Local} and \emph{Batched} columns use as base time the execution
+times presented in the \emph{NS} column of the Table~\ref{tab_benchs}.
 
 \begin{table}[!ht]
 \centering
 \caption{Overhead ratios, when compared with the NS design with $1$
-  thread (running with local scheduling, PtMalloc and without
-  TabMalloc) for the NS, SS$_{LF_2}$, FS$_{LF_2+PCC}$ designs (with
-  TabMalloc and TcMalloc), when running 1, 8, 16, 24 and 32 threads
-  with local and batched scheduling on the five sets of benchmarks
-  (best ratios by row and by design for the Minimum, Average and
-  Maximum are in bold)}
+  thread (running with local scheduling without TabMalloc) for the NS,
+  SS, FS designs (with TabMalloc), when running 1, 8, 16, 24 and 32
+  threads with local and batched scheduling on the five sets of
+  benchmarks (best ratios by row and by design for the Minimum,
+  Average and Maximum are in bold)}
 %\scalebox{1.00} {
-\begin{tabular}{ll|rr|rr|rr}
+\begin{tabular}{ll|cc|cc|cc}
 \hline\hline
 \multicolumn{2}{c|}{\multirow{2}{*}{\bf Threads}} &
 \multicolumn{2}{c|}{\multirow{1}{*}{\bf NS}} &
-\multicolumn{2}{c}{\multirow{1}{*}{\bf SS$_{LF_2}$}} & 
-\multicolumn{2}{|c}{\multirow{1}{*}{\bf FS$_{LF_2+PCC}$}}\\ \cline{3-8}
+\multicolumn{2}{c}{\multirow{1}{*}{\bf SS}} & 
+\multicolumn{2}{|c}{\multirow{1}{*}{\bf FS}}\\ \cline{3-8}
 & 
 & \multicolumn{1}{c}{\bf Local}
 & \multicolumn{1}{c}{\bf Batched}
@@ -329,47 +453,18 @@ presented in the \emph{NS} column of the Table~\ref{tab_benchs}.
 
 By observing Table~\ref{tab_batched_overhead}, we can see that, for
 one thread, on average, local scheduling is sightly better than
-batched on the three designs. For the \emph{NS} design we have $0.78$
-and $0.82$, for the \emph{SS}$_{LF_2}$ design we have $0.84$ and $0.90$
-and for the \emph{FS}$_{LF_2+PCC}$ design we have $1.30$ and $1.46$
-average overhead ratios, for the local and batched scheduling
-strategies, respectively.
-
-As we scale the number of threads, one can observe that, for the
-\emph{NS} and \emph{SS}$_{LF_2}$ designs both scheduling strategies have
-similar minimum, average and maximum overhead ratios. For the
-\emph{FS}$_{LF_2+PCC}$ design, the best minimum overhead ratio is
-always for batched scheduling. The reader can observe on
-Appendix~\ref{app:batched} that the minimum overhead values for $8$,
-$16$, $24$ and $32$ threads are given by the benchmark belonging to
-the model checking set (see Table~\ref{tab_benchs} for the
-characteristics of the benchmarks). For the average and maximum
-overhead ratio, local scheduling is always better than batched
-scheduling. The reader can observe on Appendix.~\ref{app:batched} that
-the maximum overhead values for $8$, $16$, $24$ and $32$ threads are
-given by the pyramid benchmark in the path right set.
-
-In summary, we can say that both the local and batched scheduling
+batched on the three designs. For the NS design we have $0.78$ and
+$0.82$, for the SS design we have $0.84$ and $0.90$ and for the FS
+design we have $1.30$ and $1.46$ average overhead ratios, for the
+local and batched scheduling strategies, respectively. As we scale the
+number of threads, one can observe that, for the NS and SS designs
+both scheduling strategies have similar minimum, average and maximum
+overhead ratios. For the FS design, the best minimum overhead ratio is
+always for batched scheduling. For the average and maximum overhead
+ratio, local scheduling is always better than batched scheduling. In
+summary, we can say that both the local and batched scheduling
 strategies have similar overhead results on worst case scenarios for
-the \emph{NS}, \emph{SS}$_{LF_2}$ and \emph{FS}$_{LF_2+PCC}$ designs. 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+the NS, SS and FS designs.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -377,7 +472,7 @@ the \emph{NS}, \emph{SS}$_{LF_2}$ and \emph{FS}$_{LF_2+PCC}$ designs.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section*{Acknowledgments}
+%\section*{Acknowledgments}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
