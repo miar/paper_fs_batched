@@ -159,10 +159,12 @@ each thread $t$ has its own cell $T_t$ inside a \emph{bucket array}
 which points to the private data structures.
 
 \begin{figure}[!ht]
+\vspace{-\intextsep}
 \centering
 \includegraphics[width=9.5cm]{figures/yap-mt.pdf}
 \caption{Yap's multithreaded tabled space using the NS and FS designs}
 \label{fig_yap_mt_support}
+\vspace{-1.0\intextsep}
 \end{figure}
 
 In the FS design, part of the subgoal frame information (the
@@ -173,9 +175,8 @@ information for the subgoal call (such as the pointer to the shared
 answer trie structure); the remaining information (the \emph{subgoal
   frame} data structure) remains private to each thread.
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Batched Scheduling}
+\subsection{Scheduling Strategies}
 
 The decision about the evaluation flow is determined by the
 \emph{scheduling strategy}. Different strategies may have a
@@ -189,13 +190,13 @@ breath-first manner. It favors the backtracking first with completion
 instead of the forward execution, leaving the consumption of answers
 for last. Thus, it only allows a Cluster of Dependent Subgoals (CDS)
 to return answers only after the completion point has been
-reached~\cite{Freire-96}. In other words, the local scheduling tries
-to keep a CDS as minimal as possible. When new answers are found, they
-are added to the table space and the computation fails as consequence,
-tabled subgoals inside a CDS propagate their answers to outside the
-CDS only after its completion point is found. Local scheduling causes
-a sooner completion of subgoals, which creates less complex
-dependencies between them.
+reached~\cite{Freire-96}. %% In other words, the local scheduling tries
+%% to keep a CDS as minimal as possible. When new answers are found, they
+%% are added to the table space and the computation fails as consequence,
+%% tabled subgoals inside a CDS propagate their answers to outside the
+%% CDS only after its completion point is found.
+Local scheduling causes a sooner completion of subgoals, which creates
+less complex dependencies between them.
 
 On the other hand, batched scheduling schedules the evaluation of a
 program in a depth-first manner. It favors the forward execution first
@@ -242,11 +243,13 @@ thread. The PAC procedure works at the subgoal frame level, which is
 private to each thread.
 
 \begin{figure}[!ht]
+\vspace{-\intextsep}
 \centering
 \includegraphics[width=10.5cm]{figures/pcc.pdf}
 \caption{The \emph{FS} design with the PAC procedure - (a) private
   chaining and (b) public chaining}
 \label{fig_tabtries_pcc}
+\vspace{-1.0\intextsep}
 \end{figure}
 
 Figure~\ref{fig_tabtries_pcc}(a) shows then a situation where two
@@ -318,7 +321,7 @@ operation. Algorithm~\ref{alg_table_new_answer_batched} shows how we
 have extended the tabled new answer operation to support the FS design
 with batched scheduling.
 
-\begin{algorithm} [ht]
+\begin{algorithm} [!ht]
 \caption{tabled\_new\_answer(answer ANS, subgoal frame SF)}
 \algsetup{indent=0.65cm}
 \begin{algorithmic}[1]
@@ -366,17 +369,17 @@ memory, each processor with caches $L1$, $L2$ and $L3$ respectively
 with the sizes of 64K, 2048K and 6144K, running the Linux kernel is
 the 3.16.7-200.fc20.x86\_64, with Yap 6.3 compiled with gcc 4.8.
 
-%% We used five sets of benchmarks. The \emph{Large Joins} and
-%% \emph{WordNet} sets were obtained from the OpenRuleBench
-%% project~\cite{Liang-09}; the \emph{Model Checking} set includes three
-%% different specifications and transition relation graphs usually used
-%% in model checking applications; the \emph{Path Left} and \emph{Path
-%%   Right} sets implement two recursive definitions of the well-known
-%% $path/2$ predicate, that computes the transitive closure in a graph,
-%% using several different configurations of $edge/2$ facts. We
-%% experimented graphs with the \emph{BTree} configuration with depth 17,
-%% the \emph{Pyramid} and \emph{Cycle} configurations with depth 2000 and
-%% the \emph{Grid} configuration with depth 35. 
+We used five sets of benchmarks. The \emph{Large Joins} and
+\emph{WordNet} sets were obtained from the OpenRuleBench
+project~\cite{Liang-09}; the \emph{Model Checking} set includes three
+different specifications and transition relation graphs usually used
+in model checking applications; the \emph{Path Left} and \emph{Path
+  Right} sets implement two recursive definitions of the well-known
+$path/2$ predicate, that computes the transitive closure in a graph,
+using several different configurations of $edge/2$ facts. We
+experimented graphs with the \emph{BTree} configuration with depth 17,
+the \emph{Pyramid} and \emph{Cycle} configurations with depth 2000 and
+the \emph{Grid} configuration with depth 35. 
 
 %% In order to have a deeper insight on the behavior of each benchmark,
 %% and therefore clarify some of the results that are presented next, we
@@ -518,6 +521,7 @@ presented in the {\bf NS} column of the Table~\ref{tab_benchs}.
 \setlength{\tabcolsep}{12pt}
 
 \begin{table}[!ht]
+\vspace{-\intextsep}
 \centering
 \caption{Overhead ratios, when compared with the NS design with $1$
   thread (running with local scheduling without TabMalloc) for the NS
@@ -525,6 +529,7 @@ presented in the {\bf NS} column of the Table~\ref{tab_benchs}.
   threads with local and batched scheduling on the five sets of
   benchmarks (best ratios by row and by design for the Minimum,
   Average and Maximum are in bold)}
+\vspace{-0.5\intextsep}
 %\scalebox{1.00} {
 \begin{tabular}{ll|cc|cc}
 \hline\hline
@@ -569,6 +574,7 @@ presented in the {\bf NS} column of the Table~\ref{tab_benchs}.
 \hline\hline
 \end{tabular}%}
 \label{tab_batched_overhead}
+\vspace{-0.7\intextsep}
 \end{table}
 
 By observing Table~\ref{tab_batched_overhead}, we can see that, for
@@ -592,6 +598,7 @@ procedure.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions and Further Work}
+.........
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

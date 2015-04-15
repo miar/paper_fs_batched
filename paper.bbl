@@ -28,6 +28,11 @@ Freire, J., Swift, T., Warren, D.S.: {Beyond Depth-First: Improving Tabled
   Symposium on Programming Language Implementation and Logic Programming. pp.
   243--258. No. 1140 in LNCS, Springer (1996)
 
+\bibitem{Liang-09}
+Liang, S., P.Fodor, Wan, H., M.Kifer: {OpenRuleBench: An Analysis of the
+  Performance of Rule Engines}. In: Internacional World Wide Web Conference.
+  pp. 601--610. ACM (2009)
+
 \bibitem{Marques-08}
 Marques, R., Swift, T.: {Concurrent and Local Evaluation of Normal Programs}.
   In: International Conference on Logic Programming. pp. 206--222. No. 5366 in
