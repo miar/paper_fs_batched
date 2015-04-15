@@ -1,0 +1,26 @@
+\begin{thebibliography}{1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+
+\bibitem{Areias-12b}
+Areias, M., Rocha, R.: {An Efficient and Scalable Memory Allocator for
+  Multithreaded Tabled Evaluation of Logic Programs}. In: International
+  Conference on Parallel and Distributed Systems. pp. 636--643. IEEE Computer
+  Society (2012)
+
+\bibitem{Areias-ijpp15}
+Areias, M., Rocha, R.: A lock-free hash trie design for concurrent tabled logic
+  programs. International Journal of Parallel Programming pp. 1--21 (2015)
+
+\bibitem{Freire-96}
+Freire, J., Swift, T., Warren, D.S.: {Beyond Depth-First: Improving Tabled
+  Logic Programs through Alternative Scheduling Strategies}. In: International
+  Symposium on Programming Language Implementation and Logic Programming. pp.
+  243--258. No. 1140 in LNCS, Springer (1996)
+
+\bibitem{Sagonas-98}
+Sagonas, K., Swift, T.: {An Abstract Machine for Tabled Execution of
+  Fixed-Order Stratified Logic Programs}. ACM Transactions on Programming
+  Languages and Systems  20(3),  586--634 (1998)
+
+\end{thebibliography}
