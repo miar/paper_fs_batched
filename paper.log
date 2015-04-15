@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.9.12)  15 APR 2015 15:21
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.8.1)  15 APR 2015 22:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -449,18 +449,18 @@ Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 ) (./paper.aux)
 \openout1 = `paper.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 19.
+LaTeX Font Info:    ... okay on input line 19.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 19.
+LaTeX Font Info:    ... okay on input line 19.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 19.
+LaTeX Font Info:    ... okay on input line 19.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 19.
+LaTeX Font Info:    ... okay on input line 19.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 19.
+LaTeX Font Info:    ... okay on input line 19.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 19.
+LaTeX Font Info:    ... okay on input line 19.
 
 (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -524,59 +524,59 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 26.
+(Font)              <7> on input line 29.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 26.
-LaTeX Font Info:    Try loading font information for OMS+cmtt on input line 26.
+(Font)              <5> on input line 29.
+LaTeX Font Info:    Try loading font information for OMS+cmtt on input line 29.
 
-LaTeX Font Info:    No file OMScmtt.fd. on input line 26.
+LaTeX Font Info:    No file OMScmtt.fd. on input line 29.
 
 
 LaTeX Font Warning: Font shape `OMS/cmtt/m/n' undefined
 (Font)              using `OMS/cmsy/m/n' instead
-(Font)              for symbol `textbraceleft' on input line 26.
+(Font)              for symbol `textbraceleft' on input line 29.
 
 [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-<figures/pcc.pdf, id=14, 420.57124pt x 496.85625pt>
+<figures/table-space.pdf, id=13, 163.61125pt x 211.79124pt>
+File: figures/table-space.pdf Graphic file (type pdf)
+
+<use figures/table-space.pdf>
+Package pdftex.def Info: figures/table-space.pdf used on input line 110.
+(pdftex.def)             Requested size: 128.0374pt x 165.74265pt.
+ [2 <./figures/table-space.pdf>]
+<figures/yap-mt.pdf, id=24, 321.2pt x 279.0425pt>
+File: figures/yap-mt.pdf Graphic file (type pdf)
+ <use figures/yap-mt.pdf>
+Package pdftex.def Info: figures/yap-mt.pdf used on input line 163.
+(pdftex.def)             Requested size: 298.75394pt x 259.54941pt.
+
+[3 <./figures/yap-mt.pdf>] [4]
+<figures/pcc.pdf, id=41, 420.57124pt x 496.85625pt>
 File: figures/pcc.pdf Graphic file (type pdf)
  <use figures/pcc.pdf>
-Package pdftex.def Info: figures/pcc.pdf used on input line 107.
+Package pdftex.def Info: figures/pcc.pdf used on input line 241.
 (pdftex.def)             Requested size: 298.75394pt x 352.94476pt.
 
-[2]
-Underfull \vbox (badness 3354) has occurred while \output is active []
-
- [3 <./figures/pcc.pdf>]
+[5 <./figures/pcc.pdf>] [6]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 195.
+(Font)              <9> on input line 326.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 195.
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 197.
+(Font)              <6> on input line 326.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 330.
 
- (/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <9> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 197.
- [4]
-
-LaTeX Warning: Reference `app:batched' on page 5 undefined on input line 264.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 330.
 
 
-LaTeX Warning: Reference `tab_benchs' on page 5 undefined on input line 270.
+LaTeX Warning: Reference `tab_benchs' on page 7 undefined on input line 517.
 
-
-LaTeX Warning: Reference `app:batched' on page 5 undefined on input line 343.
-
-
-LaTeX Warning: Reference `tab_benchs' on page 5 undefined on input line 345.
-
-
-LaTeX Warning: Reference `app:batched' on page 5 undefined on input line 348.
-
-[5] (./paper.bbl [6]) [7] (./paper.aux)
+[7] [8] (./paper.bbl) [9] (./paper.aux)
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
@@ -585,33 +585,30 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 2757 strings out of 494958
- 36506 string characters out of 6178523
- 112777 words of memory out of 5000000
- 5927 multiletter control sequences out of 15000+600000
+ 2772 strings out of 494958
+ 36805 string characters out of 6178524
+ 107805 words of memory out of 5000000
+ 5940 multiletter control sequences out of 15000+600000
  8147 words of font info for 29 fonts, out of 8000000 for 9000
  16 hyphenation exceptions out of 8191
- 38i,11n,24p,504b,578s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 38i,9n,24p,454b,504s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texli
 ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/tex
-mf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/
-type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
-ublic/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
-cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.
-pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></us
-r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share
-/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texliv
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb></usr/share/texlive/texmf-dist/
-fonts/type1/public/amsfonts/cm/cmtt9.pfb>
-Output written on paper.pdf (7 pages, 212743 bytes).
+mf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9
+.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb><
+/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb></usr/sh
+are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
+Output written on paper.pdf (9 pages, 204428 bytes).
 PDF statistics:
- 101 PDF objects out of 1000 (max. 8388607)
- 73 compressed objects within 1 object stream
+ 111 PDF objects out of 1000 (max. 8388607)
+ 80 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 6 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 16 words of extra memory for PDF output out of 10000 (max. 10000000)
 
