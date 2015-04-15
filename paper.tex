@@ -219,20 +219,18 @@ already removed their consumer answer structures and chained the leaf
 nodes inside the answer trie.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Implementations details}
+\subsection{Implementations Details}
 
 At the implementation level, the major difference between local and
 batched scheduling is in the tabling operation \emph{tabled new
   answer}, where we decide what to do when an answer is found during
 the evaluation. This operation checks whether a newly found answer is
 already in the corresponding answer trie structure and, if not,
-inserts it. For the NS and SS designs the support for batched
-scheduling is immediate, since the answer trie data structure is not
-shared among threads. The usage of batched scheduling with the FS
-design requires further support since with batched scheduling, answers
-are immediately propagated and we have to ensure that the propagation
-of an answer occurs on all subgoal calls one and only once. To do so,
-we take advantage of the private chaining procedure, presented in the
+inserts it. The usage of batched scheduling with the FS design
+requires further support since with batched scheduling, answers are
+immediately propagated and we have to ensure that the propagation of
+an answer occurs on all subgoal calls one and only once. To do so, we
+take advantage of the private chaining procedure, presented in the
 previous subsection, as a way to keep, for every subgoal call of every
 thread, track of all the answers that were already propagated. This
 requires minor changes to the \emph{tabled new answer} tabling
@@ -245,46 +243,37 @@ with batched scheduling.
 \algsetup{indent=0.65cm}
 \begin{algorithmic}[1]
   \STATE $leaf \gets check\_insert\_answer\_trie(ANS, SF)$
-  \IF {$NS\_design\ or\ SS\_design$}
-    \STATE $. . .$                         \COMMENT{without changes}
-  \ELSE                                                  [FS design]
-    \STATE $chain \gets check\_insert\_consumer\_chain(leaf, SF)$
-    \IF {$is\_answer\_marked\_as\_found(chain) = True$}
+  \STATE $chain \gets check\_insert\_consumer\_chain(leaf, SF)$
+  \IF {$is\_answer\_marked\_as\_found(chain) = True$}
+    \RETURN $failure$
+  \ELSE                                        [the answer is new]
+    \STATE $mark\_answer\_as\_found(chain)$
+    \IF {$local\_scheduling\_mode(SF)$}
       \RETURN $failure$
-     \ELSE                                        [the answer is new]
-       \STATE $mark\_answer\_as\_found(chain)$
-       \IF {$local\_scheduling\_mode(SF)$}
-         \RETURN $failure$
-       \ELSE                                    [batched scheduling mode]
-         \RETURN $proceed$
-       \ENDIF
-     \ENDIF
-   \ENDIF
+    \ELSE                                [batched scheduling mode]
+      \RETURN $proceed$
+    \ENDIF
+  \ENDIF  
 \end{algorithmic}
 \label{alg_table_new_answer_batched}
 \end{algorithm}
 
 The algorithm receives two arguments: the new answer found during the
 evaluation (\emph{ANS}) and the subgoal frame which corresponds to the
-call at hand (\emph{SF}). The \emph{NS\_design}, \emph{SS\_design} and
-\emph{FS\_design} macros define which table design is enabled.
+call at hand (\emph{SF}). The algorithm begins by checking/inserting
+the given \emph{ANS} into the answer trie structure, which will return
+the leaf node for the path representing \emph{ANS} (line 1).
 
-The algorithm begins by checking/inserting the given \emph{ANS} into
-the answer trie structure, which will return the leaf node for the
-path representing \emph{ANS} (line 1). In line 2, it then tests
-whether one of the NS or SS designs are active, and in such a case,
-the algorithm is remains unchanged.
-
-Otherwise, for the FS design (lines 4 to 13), it checks/inserts
-the given \emph{leaf} node into the private consumer chain for the
-current thread, which will return the corresponding chain node. In
-line 6, it then tests whether the chain node already existed in the
-consumer chain, i.e., if it was inserted or not by the current
-check/insert operation in order to return failure (line 7), or it
-proceed with marking the answer \emph{ANS} has found (line 9). At the
-end (lines 10 to 13), it returns failure if local scheduling is active
-(line 11), otherwise, the batched scheduling is active, thus it
-propagates the answer \emph{ANS} (line 13).
+Then, it checks/inserts the given \emph{leaf} node into the private
+consumer chain for the current thread, which will return the
+corresponding chain node (line 2). Next in line 3, it tests whether
+the chain node already existed in the consumer chain, i.e., if it was
+inserted or not by the current check/insert operation in order to
+return failure (line 4), or it proceeds with marking the answer
+\emph{ANS} has found (line 6). At the end (lines 7 to 10), it returns
+failure if local scheduling is active (line 8), otherwise, the batched
+scheduling is active, thus it propagates the answer \emph{ANS} (line
+10).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Performance Analysis}
