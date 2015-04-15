@@ -65,20 +65,18 @@ multithreading with tabling. Yap's threads have their own execution
 stacks and only share the code area where predicates, records, flags
 and other global non-backtrackable data are stored. For tabled
 evaluation, a thread views its tables as private but, at the engine
-level, Yap has three designs: (i) The {\bf No-Sharing (NS)} design,
-where each thread allocates fully private tables for each new tabled
-subgoal called during its computation. (ii) The {\bf Subgoal-Sharing
-  (SS)}, where threads share part of the table space and the (iii) The
-{\bf Full-Sharing (FS)}, where threads share the complete table space.
+level, Yap has three designs that vary from a \emph{No-Sharing} (NS)
+design, where each thread allocates fully private tables for each new
+tabled subgoal called during its computation, to a \emph{Full-Sharing}
+(FS), where threads share the complete table space.
 
 In this paper we discuss a novel approach for solving the problem of
 supporting multithreaded batched scheduling in the FS design and we
 present a performance analysis comparison between local scheduling
 with batched scheduling. Experimental results show that despite the
-extra data structures required to extend the FS design with batched
-scheduling, the execution time of the FS design with batched
-scheduling is still quite competitive when comparing against local
-scheduling.
+extra data structures required to combine FS design with batched
+scheduling, the execution time of combination is still quite
+competitive when comparing against the FS with local scheduling.
 
 The remainder of the paper is organized as follows. First, we briefly
 introduce some background and related work. Then, we describe our
@@ -91,9 +89,6 @@ experimental results and we end by outlining some conclusions.
 
 This section introduces some background needed for the following
 sections. 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{No-Sharing, Subgoal-Sharing and Full-Sharing Designs}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Batched Scheduling}
@@ -128,6 +123,19 @@ space and the execution continues. For some situations, this results
 in creating dependencies to older subgoals, therefore enlarging the
 current CDS~\cite{Sagonas-98} and delaying the completion point to an
 older generator node.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Yap's No-Sharing and Full-Sharing Designs}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=10.5cm]{figures/arch.pdf}
+\caption{The \emph{FS} design with the PAC procedure - (a) private
+  chaining and (b) public chaining}
+\label{fig_tabtries_pcc}
+\end{figure}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Full-Sharing with Batched Scheduling}
@@ -426,67 +434,66 @@ benchmarks presented in the early subsection.
 
 Table~\ref{tab_batched_overhead} shows the overhead ratios, when
 compared with the NS design with 1 thread (running with local
-scheduling), for the NS, SS and FS designs (all running TabMalloc),
-when running 1, 8, 16, 24 and 32 threads with local and batched
-scheduling on the five sets of benchmarks. For each design, the table
-has then two columns, a column with {\bf Local} that shows results for
-the local scheduling and a column with {\bf Batched} with results for
+scheduling), for the NS and FS designs (all running TabMalloc), when
+running 1, 8, 16, 24 and 32 threads with local and batched scheduling
+on the five sets of benchmarks. For each design, the table has then
+two columns, a column with {\bf Local} that shows results for the
+local scheduling and a column with {\bf Batched} with results for
 batched scheduling. The overhead results presented in both {\bf Local}
 and {\bf Batched} columns use as base time the execution times
 presented in the {\bf NS} column of the Table~\ref{tab_benchs}.
 
+\setlength{\tabcolsep}{12pt}
+
 \begin{table}[!ht]
 \centering
 \caption{Overhead ratios, when compared with the NS design with $1$
-  thread (running with local scheduling without TabMalloc) for the NS,
-  SS, FS designs (with TabMalloc), when running 1, 8, 16, 24 and 32
+  thread (running with local scheduling without TabMalloc) for the NS
+  and FS designs (with TabMalloc), when running 1, 8, 16, 24 and 32
   threads with local and batched scheduling on the five sets of
   benchmarks (best ratios by row and by design for the Minimum,
   Average and Maximum are in bold)}
 %\scalebox{1.00} {
-\begin{tabular}{ll|cc|cc|cc}
+\begin{tabular}{ll|cc|cc}
 \hline\hline
 \multicolumn{2}{c|}{\multirow{2}{*}{\bf Threads}} &
 \multicolumn{2}{c|}{\multirow{1}{*}{\bf NS}} &
-\multicolumn{2}{c}{\multirow{1}{*}{\bf SS}} & 
-\multicolumn{2}{|c}{\multirow{1}{*}{\bf FS}}\\ \cline{3-8}
+\multicolumn{2}{|c}{\multirow{1}{*}{\bf FS}}\\ \cline{3-6}
 & 
 & \multicolumn{1}{c}{\bf Local}
-& \multicolumn{1}{c}{\bf Batched}
-& \multicolumn{1}{|c}{\bf Local}
 & \multicolumn{1}{c}{\bf Batched}
 & \multicolumn{1}{|c}{\bf Local}
 & \multicolumn{1}{c}{\bf Batched}\\
 \hline
 \multirow{4}{*}{\bf 1}
-& {\bf Min }& {\bf 0.53}& 0.55& {\bf 0.54}& 0.55& 1.01& {\bf 0.95}\\
-& {\bf Avg }& {\bf 0.78}& 0.82& {\bf 0.84}& 0.90& {\bf 1.30}& 1.46\\
-& {\bf Max }& 1.06& {\bf 1.05}& {\bf 1.04}& {\bf 1.04}& {\bf 1.76}& 2.33\\
-& {\bf StD }& 0.15& 0.14& 0.17& 0.16& 0.22& 0.44\\
+& {\bf Min }& {\bf 0.53}& 0.55& 1.01& {\bf 0.95}\\
+& {\bf Avg }& {\bf 0.78}& 0.82& {\bf 1.30}& 1.46\\
+& {\bf Max }& 1.06& {\bf 1.05}& {\bf 1.76}& 2.33\\
+& {\bf StD }& 0.15& 0.14& 0.22& 0.44\\
 \hline
 \multirow{4}{*}{\bf 8}
-& {\bf Min }& 0.66& {\bf 0.63}& 0.66& {\bf 0.63}& 1.16&{\bf  0.99}\\
-& {\bf Avg }& {\bf 0.85}& 0.88& {\bf 0.92}& 0.93& {\bf 1.88}& 1.95\\
-& {\bf Max }& {\bf 1.12}& 1.14& 1.20& {\bf 1.15}& {\bf 2.82}& 3.49\\
-& {\bf StD }& 0.13& 0.14& 0.15& 0.14& 0.60& 0.79\\
+& {\bf Min }& 0.66& {\bf 0.63}& 1.16&{\bf  0.99}\\
+& {\bf Avg }& {\bf 0.85}& 0.88& {\bf 1.88}& 1.95\\
+& {\bf Max }& {\bf 1.12}& 1.14& {\bf 2.82}& 3.49\\
+& {\bf StD }& 0.13& 0.14& 0.60& 0.79\\
 \hline
 \multirow{4}{*}{\bf 16}
-& {\bf Min }& 0.85& {\bf 0.75}& 0.82& {\bf 0.77}& 1.17& {\bf 1.06}\\
-& {\bf Avg }& {\bf 0.98}& 1.00& {\bf 1.04}& 1.05& {\bf 1.97}& 2.08\\
-& {\bf Max }& {\bf 1.16}& 1.31& 1.31& {\bf 1.28}& {\bf 3.14}& 3.69\\
-& {\bf StD }& 0.09& 0.17& 0.12& 0.13& 0.65& 0.83\\
+& {\bf Min }& 0.85& {\bf 0.75}& 1.17& {\bf 1.06}\\
+& {\bf Avg }& {\bf 0.98}& 1.00& {\bf 1.97}& 2.08\\
+& {\bf Max }& {\bf 1.16}& 1.31& {\bf 3.14}& 3.69\\
+& {\bf StD }& 0.09& 0.17& 0.65& 0.83\\
 \hline
 \multirow{4}{*}{\bf 24}
-& {\bf Min }& {\bf 0.91}& 0.93& 1.02& {\bf 0.98}& 1.16& {\bf 1.09}\\
-& {\bf Avg }& {\bf 1.15}& 1.16& 1.22& {\bf 1.19}& {\bf 2.06}& 2.19\\
-& {\bf Max }& 1.72& {\bf 1.60}& 1.81& {\bf 1.61}& {\bf 3.49}& 4.08\\
-& {\bf StD }& 0.20& 0.21& 0.18& 0.16& 0.70& 0.91\\
+& {\bf Min }& {\bf 0.91}& 0.93& 1.16& {\bf 1.09}\\
+& {\bf Avg }& {\bf 1.15}& 1.16& {\bf 2.06}& 2.19\\
+& {\bf Max }& 1.72& {\bf 1.60}& {\bf 3.49}& 4.08\\
+& {\bf StD }& 0.20& 0.21& 0.70& 0.91\\
 \hline
 \multirow{4}{*}{\bf 32}
-& {\bf Min }& 1.05& {\bf 1.04}& {\bf 1.07}& 1.12& 1.33& {\bf 1.26}\\
-& {\bf Avg }& 1.51& {\bf 1.49}& 1.54& {\bf 1.51}& {\bf 2.24}& 2.41\\
-& {\bf Max }& {\bf 2.52}& 2.63& {\bf 2.52}& 2.62& {\bf 3.71}& 4.51\\
-& {\bf StD }& 0.45& 0.45& 0.42& 0.43& 0.74& 1.02\\
+& {\bf Min }& 1.05& {\bf 1.04}& 1.33& {\bf 1.26}\\
+& {\bf Avg }& 1.51& {\bf 1.49}& {\bf 2.24}& 2.41\\
+& {\bf Max }& {\bf 2.52}& 2.63& {\bf 3.71}& 4.51\\
+& {\bf StD }& 0.45& 0.45& 0.74& 1.02\\
 \hline\hline
 \end{tabular}%}
 \label{tab_batched_overhead}
@@ -494,19 +501,22 @@ presented in the {\bf NS} column of the Table~\ref{tab_benchs}.
 
 By observing Table~\ref{tab_batched_overhead}, we can see that, for
 one thread, on average, local scheduling is sightly better than
-batched on the three designs. For the NS design we have $0.78$ and
-$0.82$, for the SS design we have $0.84$ and $0.90$ and for the FS
-design we have $1.30$ and $1.46$ average overhead ratios, for the
-local and batched scheduling strategies, respectively. As we scale the
-number of threads, one can observe that, for the NS and SS designs
-both scheduling strategies have similar minimum, average and maximum
-overhead ratios. For the FS design, the best minimum overhead ratio is
-always for batched scheduling. For the average and maximum overhead
-ratio, local scheduling is always better than batched scheduling. In
-summary, we can say that both the local and batched scheduling
-strategies have similar overhead results on worst case scenarios for
-the NS, SS and FS designs.
-
+batched on the two designs. For the NS design we have $0.78$ and
+$0.82$ and for the FS design we have $1.30$ and $1.46$ average
+overhead ratios, for the local and batched scheduling strategies,
+respectively. As we scale the number of threads, one can observe that,
+for the NS design both scheduling strategies have similar minimum,
+average and maximum overhead ratios. For the FS design, the best
+minimum overhead ratio on $1$, $8$, $16$, $24$ and $32$ threads is
+always the batched scheduling. For the average and maximum overhead
+ratio, local scheduling is always better than batched
+scheduling. However, for the average ratio, the results between both
+strategies is quite close. We consider this to be quite significant,
+once the FS design with batched scheduling requires the support of the
+PAC procedure. For the maximum overhead ratio, the difference between
+both strategies is higher than for the average overhead ratio, however
+we hope to reduce the difference with further improvements in the PAC
+procedure.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions and Further Work}
