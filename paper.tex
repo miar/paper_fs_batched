@@ -67,10 +67,9 @@ and other global non-backtrackable data are stored. For tabled
 evaluation, a thread views its tables as private but, at the engine
 level, Yap has three designs: (i) The {\bf No-Sharing (NS)} design,
 where each thread allocates fully private tables for each new tabled
-subgoal called during its computation. (ii) {\bf Subgoal-Sharing
-  (SS)}, where threads share part of the table space and the (iii)
-{\bf Full-Sharing (FS)}, where threads share the complete table
-space. 
+subgoal called during its computation. (ii) The {\bf Subgoal-Sharing
+  (SS)}, where threads share part of the table space and the (iii) The
+{\bf Full-Sharing (FS)}, where threads share the complete table space.
 
 In this paper we discuss a novel approach for solving the problem of
 supporting multithreaded batched scheduling in the FS design and we
@@ -86,7 +85,6 @@ introduce some background and related work. Then, we describe our
 approach for combining batched scheduling with the FS design. Next, we
 show the most important implementation details and finally, we discuss
 experimental results and we end by outlining some conclusions.
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Background}
