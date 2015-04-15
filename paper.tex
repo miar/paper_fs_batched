@@ -72,13 +72,13 @@ new tabled subgoal called during its computation, to a
 \emph{Full-Sharing} (FS), where threads share the complete table
 space.
 
-In this paper we discuss a novel approach for solving the problem of
-supporting multithreaded batched scheduling in the FS design and we
-present a performance analysis comparison between local scheduling
-with batched scheduling. Experimental results show that despite the
-extra data structures required to combine FS design with batched
-scheduling, the execution time of combination is still quite
-competitive when comparing against the FS with local scheduling.
+In this paper we discuss a novel approach for combining the FS design
+with batched scheduling and we present a performance analysis
+comparison between local scheduling with batched
+scheduling. Experimental results show that despite the extra data
+structures required to combine FS design with batched scheduling, the
+execution time of combination is still quite competitive when
+comparing against the FS with local scheduling.
 
 The remainder of the paper is organized as follows. First, we briefly
 introduce some background and related work. Then, we describe our
@@ -160,7 +160,7 @@ which points to the private data structures.
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=10.5cm]{figures/yap-mt.pdf}
+\includegraphics[width=9.5cm]{figures/yap-mt.pdf}
 \caption{Yap's multithreaded tabled space using the NS and FS designs}
 \label{fig_yap_mt_support}
 \end{figure}
@@ -212,7 +212,12 @@ older generator node.
 \section{Full-Sharing with Batched Scheduling}
 
 In this section, we show how we have extended the FS design to support
-batched scheduling.
+batched scheduling. The usage of batched scheduling with the FS design
+requires further support since with batched scheduling, answers are
+immediately propagated and we have to ensure that the propagation of
+an answer occurs on all subgoal calls one and only once. To do so,
+next we show a procedure that, for every subgoal call of every thread,
+keeps track of all the answers that were already propagated.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Our Approach}
@@ -252,9 +257,9 @@ trie with $3$ answers found for the subgoal call $i$. For the sake of
 simplicity, we are omitting the internal answer trie nodes and we are
 only showing the leaf nodes nodes $LN_1$, $LN_2$ and $LN_3$, in the
 figure. With the PAC procedure, the leaf nodes are not chained in the
-\emph{AT} data structure. Now, the chaining process is done privately,
-and for that, we use the subgoal frame structure of each thread. On
-the subgoal frame structure we added a new field, called
+answer trie data structure. Now, the chaining process is done
+privately, and for that, we use the subgoal frame structure of each
+thread. On the subgoal frame structure we added a new field, called
 \emph{consumer}, to store the answers found within the execution of
 the thread. In order to minimize the impact of the \emph{PAC}
 optimization, each node within the new consumer answer structure has
@@ -307,14 +312,8 @@ batched scheduling is in the tabling operation \emph{tabled new
   answer}, where we decide what to do when an answer is found during
 the evaluation. This operation checks whether a newly found answer is
 already in the corresponding answer trie structure and, if not,
-inserts it. The usage of batched scheduling with the FS design
-requires further support since with batched scheduling, answers are
-immediately propagated and we have to ensure that the propagation of
-an answer occurs on all subgoal calls one and only once. To do so, we
-take advantage of the private chaining procedure, presented in the
-previous subsection, as a way to keep, for every subgoal call of every
-thread, track of all the answers that were already propagated. This
-requires minor changes to the \emph{tabled new answer} tabling
+inserts it. This requires minor changes to the \emph{tabled new
+  answer} tabling
 operation. Algorithm~\ref{alg_table_new_answer_batched} shows how we
 have extended the tabled new answer operation to support the FS design
 with batched scheduling.
