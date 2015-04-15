@@ -36,12 +36,63 @@
   Scheduling
 \end{abstract}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
+Tabling~\cite{Chen-96} is an implementation technique that overcomes
+some limitations of traditional Prolog systems in dealing with
+redundant sub-computations and recursion. Tabling consists of storing
+intermediate answers for subgoals so that they can be reused when a
+repeated subgoal appears during the resolution process. Tabling has
+become a popular and successful technique thanks to the
+ground-breaking work in the XSB Prolog system and in particular in the
+SLG-WAM engine~\cite{Sagonas-98}, the most successful engine of
+XSB. The success of SLG-WAM led to several alternative implementations
+that differ in the execution rule, in the data-structures used to
+implement tabling, and in the changes to the underlying Prolog
+engine. Implementations of tabling are now widely available in systems
+like Yap Prolog, B-Prolog, ALS-Prolog, Mercury, Ciao Prolog and more
+recently Picat. 
+
+Multithreading in Prolog is the ability to concurrently perform
+computations, in which each computation runs independently but shares
+the program clauses. When multithreading is combined with tabling, we
+have the best of both worlds, since we can exploit the combination of
+higher procedural control with higher declarative semantics. To the
+best of our knowledge, XSB~\cite{Marques-08} and Yap~\cite{Areias-12a}
+were the only Prolog systems that were able to combine both
+multithreading with tabling. Yap's threads have their own execution
+stacks and only share the code area where predicates, records, flags
+and other global non-backtrackable data are stored. For tabled
+evaluation, a thread views its tables as private but, at the engine
+level, Yap has three designs: (i) The {\bf No-Sharing (NS)} design,
+where each thread allocates fully private tables for each new tabled
+subgoal called during its computation. (ii) {\bf Subgoal-Sharing
+  (SS)}, where threads share part of the table space and the (iii)
+{\bf Full-Sharing (FS)}, where threads share the complete table
+space. 
+
+In this paper we discuss a novel approach for solving the problem of
+supporting multithreaded batched scheduling in the FS design and we
+present a performance analysis comparison between local scheduling
+with batched scheduling. Experimental results show that despite the
+extra data structures required to extend the FS design with batched
+scheduling, the execution time of the FS design with batched
+scheduling is still quite competitive when comparing against local
+scheduling.
+
+The remainder of the paper is organized as follows. First, we briefly
+introduce some background and related work. Then, we describe our
+approach for combining batched scheduling with the FS design. Next, we
+show the most important implementation details and finally, we discuss
+experimental results and we end by outlining some conclusions.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Background}
+
+This section introduces some background needed for the following
+sections. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{No-Sharing, Subgoal-Sharing and Full-Sharing Designs}
