@@ -11,6 +11,9 @@
 \newcommand{\verbatimproperties}{\renewcommand{\baselinestretch}{0.85} \small}
 %\newcommand{\tableproperties}{\centering \big}
 \newcommand{\LINECOMMENT}[1]{$\triangleright$ #1}
+
+%\setlength{\belowcaptionskip}{-26pt}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
@@ -388,11 +391,11 @@ compared with the NS design with 1 thread (running with local
 scheduling), for the NS, SS and FS designs (all running TabMalloc),
 when running 1, 8, 16, 24 and 32 threads with local and batched
 scheduling on the five sets of benchmarks. For each design, the table
-has then two columns, a column with \emph{Local} that shows results
-for the local scheduling and a column with \emph{Batched} with results
-for batched scheduling. The overhead results presented in both
-\emph{Local} and \emph{Batched} columns use as base time the execution
-times presented in the \emph{NS} column of the Table~\ref{tab_benchs}.
+has then two columns, a column with {\bf Local} that shows results for
+the local scheduling and a column with {\bf Batched} with results for
+batched scheduling. The overhead results presented in both {\bf Local}
+and {\bf Batched} columns use as base time the execution times
+presented in the {\bf NS} column of the Table~\ref{tab_benchs}.
 
 \begin{table}[!ht]
 \centering
