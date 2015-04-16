@@ -462,6 +462,15 @@ the NS design, while batched scheduling is better in the FS
 design. For the average and maximum overhead ratios, in the FS design,
 the best strategy is always the local scheduling.   
 
+As we scale the number of threads, for the NS design both scheduling
+strategies have similar minimum, average and maximum overhead
+ratios. For the FS design, the best minimum overhead ratio is always
+for the batched scheduling. For the average and maximum overhead
+ratio, local scheduling is always better than batched
+scheduling. However, for the average ratio, the results between both
+strategies is quite close. For the maximum overhead ratio, the
+difference between both strategies is significantly higher. 
+
 %%  As we scale the number of threads, one can observe that,
 %% for the NS design both scheduling strategies have similar minimum,
 %% average and maximum overhead ratios. For the FS design, the best
@@ -479,11 +488,10 @@ the best strategy is always the local scheduling.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions and Further Work}
 We have presented a simple and novel approach for combining the FS
-design with batched scheduling. Experimental results showed that one
+design with batched scheduling. Experimental results showed that on
 average, the extra structures required for the combination do not seem
 to have a big impact in the performance. Further work will include
-experimentation in more applications and improvements in the PAC
-procedure.
+experimentation in other real world applications.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
