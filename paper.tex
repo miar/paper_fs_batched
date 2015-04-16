@@ -457,11 +457,10 @@ maximum and standard deviation overhead ratios.
 \end{table}
 
 By observing Table~\ref{tab_batched_overhead}, we can see that, for 1
-thread, on the average overhead ratio, local scheduling is sightly
-better than batched on the two designs. For the NS design we have
-$0.78$ and $0.82$ and for the FS design we have $1.30$ and $1.46$
-average overhead ratios, for the local and batched scheduling
-strategies, respectively.
+thread, on the minimum overhead ratio, local scheduling is better on
+the NS design, while batched scheduling is better in the FS
+design. For the average and maximum overhead ratios, in the FS design,
+the best strategy is always the local scheduling.   
 
 %%  As we scale the number of threads, one can observe that,
 %% for the NS design both scheduling strategies have similar minimum,
