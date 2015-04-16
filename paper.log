@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.9.12)  16 APR 2015 15:32
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.9.12)  16 APR 2015 16:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -449,18 +449,18 @@ Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 ) (./paper.aux)
 \openout1 = `paper.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
 
 (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -539,54 +539,55 @@ LaTeX Font Warning: Font shape `OMS/cmtt/m/n' undefined
 [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-<figures/table-space.pdf, id=13, 160.6pt x 200.75pt>
+Underfull \vbox (badness 2158) has occurred while \output is active []
+
+ [2]
+<figures/table-space.pdf, id=16, 160.6pt x 200.75pt>
 File: figures/table-space.pdf Graphic file (type pdf)
 
 <use figures/table-space.pdf>
-Package pdftex.def Info: figures/table-space.pdf used on input line 110.
+Package pdftex.def Info: figures/table-space.pdf used on input line 164.
 (pdftex.def)             Requested size: 128.0374pt x 160.0519pt.
- [2 <./figures/table-space.pdf>]
-<figures/yap-mt.pdf, id=24, 321.2pt x 279.0425pt>
+ [3 <./figures/table-space.pdf>]
+<figures/yap-mt.pdf, id=27, 321.2pt x 279.0425pt>
 File: figures/yap-mt.pdf Graphic file (type pdf)
  <use figures/yap-mt.pdf>
-Package pdftex.def Info: figures/yap-mt.pdf used on input line 164.
+Package pdftex.def Info: figures/yap-mt.pdf used on input line 207.
 (pdftex.def)             Requested size: 270.30118pt x 234.83264pt.
 
-Underfull \vbox (badness 2772) has occurred while \output is active []
-
- [3 <./figures/yap-mt.pdf>] <figures/pcc.pdf, id=38, 420.57124pt x 496.85625pt>
+[4 <./figures/yap-mt.pdf>] <figures/pcc.pdf, id=41, 420.57124pt x 496.85625pt>
 File: figures/pcc.pdf Graphic file (type pdf)
 
 <use figures/pcc.pdf>
-Package pdftex.def Info: figures/pcc.pdf used on input line 250.
+Package pdftex.def Info: figures/pcc.pdf used on input line 300.
 (pdftex.def)             Requested size: 298.75394pt x 352.94476pt.
- [4]
-Underfull \vbox (badness 10000) has occurred while \output is active []
+ [5]
+Underfull \vbox (badness 6825) has occurred while \output is active []
 
- [5 <./figures/pcc.pdf>]
+ [6 <./figures/pcc.pdf>]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 329.
+(Font)              <9> on input line 379.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 329.
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 333.
+(Font)              <6> on input line 379.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 383.
 
  (/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <9> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 333.
- [6]
-[7] (./paper.bbl [8]) [9] (./paper.aux)
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 383.
+ [7]
+[8] (./paper.bbl [9]) [10] (./paper.aux)
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 2771 strings out of 494958
- 36793 string characters out of 6178523
- 109805 words of memory out of 5000000
- 5939 multiletter control sequences out of 15000+600000
- 8147 words of font info for 29 fonts, out of 8000000 for 9000
+ 2769 strings out of 494958
+ 36774 string characters out of 6178523
+ 108805 words of memory out of 5000000
+ 5938 multiletter control sequences out of 15000+600000
+ 7802 words of font info for 28 fonts, out of 8000000 for 9000
  16 hyphenation exceptions out of 8191
  38i,9n,24p,374b,506s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
@@ -600,12 +601,11 @@ ublic/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/c
 m/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9
 .pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb><
-/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb></usr/sh
-are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
-Output written on paper.pdf (9 pages, 205706 bytes).
+/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
+Output written on paper.pdf (10 pages, 202558 bytes).
 PDF statistics:
- 111 PDF objects out of 1000 (max. 8388607)
- 80 compressed objects within 1 object stream
+ 110 PDF objects out of 1000 (max. 8388607)
+ 79 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  16 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -11,14 +11,14 @@
 \newcommand{\verbatimproperties}{\renewcommand{\baselinestretch}{0.85} \small}
 %\newcommand{\tableproperties}{\centering \big}
 \newcommand{\LINECOMMENT}[1]{$\triangleright$ #1}
-
 %\setlength{\belowcaptionskip}{-26pt}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
-\title{On Extending a Full-Sharing Design with Batched Scheduling}
+\title{On Extending a Full-Sharing Multithreaded Tabling Design with
+  Batched Scheduling}
 
 \author{Miguel Areias \and Ricardo Rocha}
 
@@ -31,28 +31,47 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{abstract}
+Tabling is an implementation technique that overcomes some limitations
+of traditional Prolog systems in dealing with redundant
+sub-computations and recursion. Multithreading in Prolog is the
+ability to concurrently perform computations, in which each
+computation runs independently but shares the program clauses. When
+multithreading is combined with tabling, we have the best of both
+worlds, since we can exploit the combination of higher procedural
+control with higher declarative semantics.  To support this
+combination, the Yap system has at engine level, multiple designs that
+vary from a No-Sharing design, where each thread allocates fully
+private tables for each new tabled subgoal called during its
+computation, to a Full-Sharing design, where threads share the
+complete table space. Arguably, batched scheduling is one of the most
+successful tabling scheduling strategies. In this work, we propose an
+extension of the Full-Sharing design to support batched
+scheduling. Experimental results show that, despite the extra data
+structures required to support the extension, the FS design remains
+quite competitive.
 
-  \textbf{Keywords:} Multithreading, Tabling, Concurrency, Batched
-  Scheduling
+\textbf{Keywords:} Logic Programming, Multithreading, Tabling, Scheduling.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Introduction}
 
 Tabling~\cite{Chen-96} is an implementation technique that overcomes
 some limitations of traditional Prolog systems in dealing with
 redundant sub-computations and recursion. Tabling consists of storing
-intermediate answers for subgoals so that they can be reused when a
-repeated subgoal appears during the resolution process. Tabling has
-become a popular and successful technique thanks to the
-ground-breaking work in the XSB Prolog system and in particular in the
-SLG-WAM engine~\cite{Sagonas-98}, the most successful engine of
-XSB. The success of SLG-WAM led to several alternative implementations
-that differ in the execution rule, in the data-structures used to
-implement tabling, and in the changes to the underlying Prolog
+intermediate answers for subgoals in a proper data structure, called
+the \emph{table space}, so that they can be reused when a repeated
+subgoal appears during the resolution process. Tabling has become a
+popular and successful technique thanks to the ground-breaking work in
+the XSB Prolog system and in particular in the SLG-WAM
+engine~\cite{Sagonas-98}, the most successful engine of XSB. The
+success of SLG-WAM led to several alternative implementations that
+differ in the execution rule, in the data-structures used to implement
+tabling, and in the changes to the underlying Prolog
 engine. Implementations of tabling are now widely available in systems
 like Yap Prolog, B-Prolog, ALS-Prolog, Mercury, Ciao Prolog and more
-recently Picat. 
+recently Picat.
 
 Multithreading in Prolog is the ability to concurrently perform
 computations, in which each computation runs independently but shares
@@ -60,39 +79,74 @@ the program clauses. When multithreading is combined with tabling, we
 have the best of both worlds, since we can exploit the combination of
 higher procedural control with higher declarative semantics. To the
 best of our knowledge, XSB~\cite{Marques-08} and Yap~\cite{Areias-12a}
-were the only Prolog systems that were able to combine both
+are the only Prolog systems that support the combination of
 multithreading with tabling. Yap implements a SWI-Prolog compatible
-multi-threading library~\cite{Wielemaker-03}. Yap's threads have their
+multithreading library~\cite{Wielemaker-03}. Yap's threads have their
 own execution stacks and only share the code area where predicates,
 records, flags and other global non-backtrackable data are stored. For
 tabled evaluation, a thread views its tables as private but, at the
-engine level, Yap has three designs that vary from a \emph{No-Sharing}
-(NS) design, where each thread allocates fully private tables for each
-new tabled subgoal called during its computation, to a
-\emph{Full-Sharing} (FS), where threads share the complete table
-space.
+engine level, Yap has three designs~\cite{Areias-12a} that vary from a
+\emph{No-Sharing} (NS) design, where each thread allocates fully
+private tables for each new tabled subgoal called during its
+computation, to a \emph{Full-Sharing} (FS) design, where threads share
+the complete table space.
 
-In this paper we discuss a novel approach for combining the FS design
-with batched scheduling and we present a performance analysis
-comparison between local scheduling with batched
-scheduling. Experimental results show that despite the extra data
-structures required to combine FS design with batched scheduling, the
-execution time of combination is still quite competitive when
-comparing against the FS with local scheduling.
+The decision about the evaluation flow is determined by the
+\emph{scheduling strategy}. Different strategies may have a
+significant impact on performance, and may lead to a different
+ordering of solutions to the query goal. Arguably, the two most
+successful tabling scheduling strategies are \emph{local scheduling}
+and \emph{batched scheduling}~\cite{Freire-96}. Local scheduling tries
+to complete subgoals as soon as possible. When new answers are found,
+they are added to the table space and the evaluation fails. Answers
+are only returned when all program clauses for the subgoal at hand
+were resolved. Batched scheduling favors forward execution first,
+backtracking next, and consuming answers or completion last. It thus
+tries to delay the need to move around the search tree by batching the
+return of answers to repeated subgoals. When new answers are found for
+a particular tabled subgoal, they are added to the table space and the
+evaluation continues.
+
+With the FS design, all tables are shared. Thus, since several threads
+can be inserting answers in the same table, when an answer already
+exists, it is not possible to determine if the answer is new or
+repeated for a certain thread without further support. However, for
+local scheduling this is not a problem because, for repeated and new
+answers, local scheduling always fails. The problem is with batched
+scheduling that requires further support to work with the FS design
+since, with batched scheduling, only repeated answers should fail. We
+have thus to detect when a new found answer is also a new answer for
+the thread at hand in order to ensure that new answers for a given
+subgoal call are correctly propagated one and only once to all
+thread's calls.
+ 
+In this work, we propose an extension to the table space data
+structures, which we named \emph{Private Answer Chaining (PAC)}, as a
+way to keep track, per thread and subgoal call, of the answers that
+were already found and propagated to all repeated calls. We discuss in
+detail our proposal for extending the FS design with batched
+scheduling and we present a performance analysis comparison between
+local and batched scheduling. Experimental results show that, despite
+the extra PAC data structures required to support batched scheduling
+with the FS design, the execution time of the combination is still
+quite competitive when comparing against the FS design with local
+scheduling.
 
 The remainder of the paper is organized as follows. First, we briefly
 introduce some background and related work. Then, we describe our
-approach for combining batched scheduling with the FS design. Next, we
-show the most important implementation details and finally, we discuss
+approach for combining batched scheduling with the FS design and we
+discuss the most important implementation details. Finally, we present
 experimental results and we end by outlining some conclusions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Background}
 
 This section introduces some background needed for the following
 sections. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsection{Table Space Organization}
 
 The basic idea behind tabling is straightforward: programs are
@@ -105,12 +159,12 @@ they are stored in their tables and later returned to all similar
 calls.
 
 \begin{wrapfigure}{r}{4.5cm}
-\vspace{-\intextsep}
+%\vspace{-\intextsep}
 \centering
 \includegraphics[width=4.5cm]{figures/table-space.pdf}
 \caption{Table space organization}
 \label{fig_table_space}
-\vspace{-0.5\intextsep}
+%\vspace{-0.5\intextsep}
 \end{wrapfigure}
 
 Figure~\ref{fig_table_space} shows the table space organization of the
@@ -131,70 +185,64 @@ answer trie data units, the \emph{answer trie nodes}, corresponds to a
 different answer to the entry subgoal.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsection{Yap's Multithreaded Tabling Support}
 
-Yap implements a SWI-Prolog compatible multi-threading
-library~\cite{Wielemaker-03}. Like in SWI-Prolog, Yap's threads have
-their own execution stacks and only share the code area where
-predicates, records, flags and other global non-backtrackable data are
-stored. 
-
-In a multithreaded tabling evaluation, a thread views its tables as
-private but, at the engine level, Yap has three designs that vary from
-a \emph{No-Sharing} (NS) design, where each thread allocates fully
-private tables for each new tabled subgoal called during its
-computation, to a \emph{Full-Sharing} (FS), where threads share the
-complete table space. Figure~\ref{fig_table_space} shows Yap's
-multithreaded tabling support with an abstraction layer to which
-threads interact (the threads represented in the bottom of the
-figure), and at the engine level the configuration of the NS and FS
-designs in a situation where several different threads evaluated the
-same tabled subgoal call $i$. 
-
-In the NS design, each thread allocates fully private tables for each
-new subgoal called during its computation. One can observe that the
-table entry data structure still stores the common information for the
-predicate (such as the arity or the evaluation strategy), and then
-each thread $t$ has its own cell $T_t$ inside a \emph{bucket array}
-which points to the private data structures.
+In Yap, a thread views its tables as private but, at the engine level,
+it uses a common table space where tables are shared among all
+threads. Yap implements three designs for concurrent tabling support
+that vary from a \emph{No-Sharing} (NS) design, where each thread
+allocates fully private tables for each new tabled subgoal called
+during its computation, to a \emph{Full-Sharing} (FS) design, where
+threads share the complete table space. Figure~\ref{fig_table_space}
+shows Yap's multithreaded table space organization for the NS and FS
+designs, where an interface layer abstracts the design being used at
+the engine level. The figure illustrates the main differences between
+the two designs for a situation where several threads are evaluating
+the same tabled subgoal call $call\_i$.
 
 \begin{figure}[!ht]
-\vspace{-0.5\intextsep}
+%\vspace{-0.5\intextsep}
 \centering
 \includegraphics[width=9.5cm]{figures/yap-mt.pdf}
-\caption{Yap's multithreaded tabled space using the NS and FS designs}
+\caption{Yap's multithreaded table space organization for the NS and FS designs}
 \label{fig_yap_mt_support}
-\vspace{-1.0\intextsep}
+%\vspace{-1.0\intextsep}
 \end{figure}
 
-In the FS design, part of the subgoal frame information (the
-\emph{subgoal entry} data structure) and the answer trie structure are
-now shared among all threads. The previous subgoal frame data
-structure was split into two: the \emph{subgoal entry} stores common
-information for the subgoal call (such as the pointer to the shared
-answer trie structure); the remaining information (the \emph{subgoal
-  frame} data structure) remains private to each thread.
+When using the NS design, each thread allocates fully private tables
+for each new subgoal called during its computation. One can observe
+that the table entry data structure still stores the common
+information for the predicate (such as the arity or the evaluation
+strategy), and then each thread $t$ has its own cell $T_t$ inside a
+\emph{bucket array} which points to the private data structures.
+
+When using the FS design, the subgoal and answer trie structures and
+part of the subgoal frame information (the \emph{subgoal entry} data
+structure in Fig.~\ref{fig_yap_mt_support}) are shared among all
+threads. The previous subgoal frame data structure was split in two:
+the \emph{subgoal entry} stores common information for the subgoal
+call (such as the pointer to the shared answer trie structure); the
+remaining information is kept private to each thread in the
+\emph{subgoal frame} data structure.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsection{Scheduling Strategies}
 
-The decision about the evaluation flow is determined by the
-\emph{scheduling strategy}. Different strategies may have a
-significant impact on performance, and may lead to a different
-ordering of solutions to the query goal. Arguably, the two most
-successful tabling scheduling strategies are \emph{local scheduling}
-and \emph{batched scheduling}~\cite{Freire-96}.
+Local scheduling schedules the evaluation of a program in a
+breath-first manner. It favors backtracking first with completion
+instead of forward execution, leaving the consumption of answers for
+last. Local scheduling only allows a \emph{Cluster of Dependent
+  Subgoals} (CDS) to return answers after a fixpoint point has been
+reached~\cite{Freire-96}.
 
-Local scheduling strategy schedules the evaluation of a program in a
-breath-first manner. It favors the backtracking first with completion
-instead of the forward execution, leaving the consumption of answers
-for last. Thus, it only allows a Cluster of Dependent Subgoals (CDS)
-to return answers only after the completion point has been
-reached~\cite{Freire-96}. %% In other words, the local scheduling tries
-%% to keep a CDS as minimal as possible. When new answers are found, they
-%% are added to the table space and the computation fails as consequence,
-%% tabled subgoals inside a CDS propagate their answers to outside the
-%% CDS only after its completion point is found.
+In other words, local scheduling tries
+to keep CDS as minimal as possible. When new answers are found, they
+are added to the table space and the computation fails as consequence,
+tabled subgoals inside a CDS propagate their answers to outside the
+CDS only after its completion point is found.
+
 Local scheduling causes a sooner completion of subgoals, which creates
 less complex dependencies between them.
 
@@ -210,6 +258,7 @@ current CDS~\cite{Sagonas-98} and delaying the completion point to an
 older generator node.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Extending Full-Sharing with Batched Scheduling}
 
 In this section, we show how we have extended the FS design to support
@@ -222,6 +271,7 @@ of every thread, keeps track of all the answers that were already
 propagated.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsection{Our Approach}
 
 The key idea of our approach, which we named Privately-consumed Answer
@@ -245,13 +295,13 @@ The PAC procedure works at the subgoal frame level, which is
 private to each thread.
 
 \begin{figure}[!ht]
-\vspace{-\intextsep}
+%\vspace{-\intextsep}
 \centering
 \includegraphics[width=10.5cm]{figures/pcc.pdf}
-\caption{The \emph{FS} design with the PAC procedure - (a) private
-  chaining and (b) public chaining}
+\caption{The PAC procedure using (a) private chaining and (b) public
+  chaining}
 \label{fig_tabtries_pcc}
-\vspace{-1.0\intextsep}
+%\vspace{-1.0\intextsep}
 \end{figure}
 
 Figure~\ref{fig_tabtries_pcc}(a) shows then a situation where two
@@ -395,7 +445,7 @@ maximum and standard deviation overhead ratios.
 
 \setlength{\tabcolsep}{12pt}
 \begin{table}[!ht]
-\vspace{-\intextsep}
+%\vspace{-\intextsep}
 \centering
 %% \caption{Overhead ratios, when compared with the NS design with $1$
 %%   thread (running with local scheduling without TabMalloc) for the NS
@@ -408,7 +458,7 @@ maximum and standard deviation overhead ratios.
   threads with local and batched scheduling (lowest is the best and it
   is marked in bold by row and by design for the Minimum, Average and
   Maximum)}
-\vspace{-0.5\intextsep}
+%\vspace{-0.5\intextsep}
 %\scalebox{1.00} {
 \begin{tabular}{ll|cc|cc}
 \hline\hline
@@ -453,7 +503,7 @@ maximum and standard deviation overhead ratios.
 \hline\hline
 \end{tabular}%}
 \label{tab_batched_overhead}
-\vspace{-0.7\intextsep}
+%\vspace{-0.7\intextsep}
 \end{table}
 
 By observing Table~\ref{tab_batched_overhead}, we can see that, for 1
