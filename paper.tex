@@ -391,8 +391,7 @@ that, we use the following formula for the overhead $O_{DBT} = D_{BT}
 / NS_{B1}$.  After calculating all the overheads $O_{DBT}$ for a
 certain design $D$ and number of threads $T$ corresponding to the
 several benchmarks $B$, we calculate the respective minimum, average,
-maximum and standard deviation overhead ratios. Thus, the lowest ratio
-is the one that represents lowest overhead and it is the best ratio.
+maximum and standard deviation overhead ratios.
 
 \setlength{\tabcolsep}{12pt}
 \begin{table}[!ht]
@@ -457,28 +456,35 @@ is the one that represents lowest overhead and it is the best ratio.
 \vspace{-0.7\intextsep}
 \end{table}
 
-By observing Table~\ref{tab_batched_overhead}, we can see that, for
-one thread, on average, local scheduling is sightly better than
-batched on the two designs. For the NS design we have $0.78$ and
-$0.82$ and for the FS design we have $1.30$ and $1.46$ average
-overhead ratios, for the local and batched scheduling strategies,
-respectively. As we scale the number of threads, one can observe that,
-for the NS design both scheduling strategies have similar minimum,
-average and maximum overhead ratios. For the FS design, the best
-minimum overhead ratio on $1$, $8$, $16$, $24$ and $32$ threads is
-always the batched scheduling. For the average and maximum overhead
-ratio, local scheduling is always better than batched
-scheduling. However, for the average ratio, the results between both
-strategies is quite close. We consider this to be quite significant,
-once the FS design with batched scheduling requires the support of the
-PAC procedure. For the maximum overhead ratio, the difference between
-both strategies is higher than for the average overhead ratio, however
-we hope to reduce the difference with further improvements in the PAC
-procedure.
+By observing Table~\ref{tab_batched_overhead}, we can see that, for 1
+thread, on the average overhead ratio, local scheduling is sightly
+better than batched on the two designs. For the NS design we have
+$0.78$ and $0.82$ and for the FS design we have $1.30$ and $1.46$
+average overhead ratios, for the local and batched scheduling
+strategies, respectively.
+
+%%  As we scale the number of threads, one can observe that,
+%% for the NS design both scheduling strategies have similar minimum,
+%% average and maximum overhead ratios. For the FS design, the best
+%% minimum overhead ratio on $1$, $8$, $16$, $24$ and $32$ threads is
+%% always the batched scheduling. For the average and maximum overhead
+%% ratio, local scheduling is always better than batched
+%% scheduling. However, for the average ratio, the results between both
+%% strategies is quite close. We consider this to be quite significant,
+%% once the FS design with batched scheduling requires the support of the
+%% PAC procedure. For the maximum overhead ratio, the difference between
+%% both strategies is higher than for the average overhead ratio, however
+%% we hope to reduce the difference with further improvements in the PAC
+%% procedure.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions and Further Work}
-.........
+We have presented a simple and novel approach for combining the FS
+design with batched scheduling. Experimental results showed that one
+average, the extra structures required for the combination do not seem
+to have a big impact in the performance. Further work will include
+experimentation in more applications and improvements in the PAC
+procedure.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
