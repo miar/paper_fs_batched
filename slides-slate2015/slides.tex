@@ -77,7 +77,8 @@
     Multithreaded Tabling Design with Batched Scheduling}}
 
 \rightheader{\textcolor{myblack}{Miguel Areias and Ricardo Rocha}}
-\Restriction{\textcolor{myblack}{SLATE 2015, Madrid, Spain}} % left footer
+\Restriction{\textcolor{myblack}{\includegraphics[scale=0.30]{figures/slate.pdf}}} 
+
 \rightfooter{\textcolor{myblack}{{\bf \thepage ~/~\pageref{LastPage}}}}
 
 %--------------------------------------------------
@@ -154,80 +155,6 @@ Faculty of Sciences, University of Porto, Portugal\\
   \item \redtext{YapTab-Mt} \yellowtext{[ICLP 2012]}.
   \end{sublista}
 \end{lista}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\titulo{Tabling Scheduling Strategies}
-
-\begin{lista}
-\item The two most successful tabling scheduling strategies are
-  \redtext{Local} e \redtext{Batched}. They define the behavior of the
-  tabling mechanism whenever it finds a \yellowtext{new answer} for a
-  tabled call. \\ [0.3cm]
-\end{lista}
-
-FAZER FIGURA COM LOCAL VS BATCHED.
-CLUSTER THE DEPENDENCIAS EM QUE EM LOCAL AS RESPOSTAS APENAS SAO
-CONSUMIDAS SOMENTE APOS TODAS AS RESPOSTAS SEREM ENCONTRADAS. EM
-BATCHED É O CONTRARIO
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\titulo{Tabling Scheduling Strategies}
-
-\begin{lista}
-\item The two most successful tabling scheduling strategies are
-  \redtext{Local} e \redtext{Batched}. They define the behavior of the
-  tabling mechanism whenever it finds a \yellowtext{new answer} for a
-  tabled call. \\ [0.3cm]
-\end{lista}
-\centering
-\scalebox{0.87}{
-\begin{tabular}{|c@{~~~}|c@{~~~}|c|}
-\hline
-\multirow{3}{*}{\bf {Scheduling}}          &
-\multirow{3}{*}{\bf {New Answer}}          & 
-\multirow{3}{*}{\bf {Fix-Point Detection}} \\
-& & \\
-& & \\ 
-\hline \hline
-\multirow{3}{*}
-{\redtext{Local}} &    \yellowtext{Fail} the computation  & 
-                    \yellowtext{Consume all the answers}, \\
-                  &           to the \yellowtext{current} & 
-                                  propagating them to the \\
-                  &                         choice point. & 
-               context of the \yellowtext{previous} call. \\
-\hline \hline
-\multirow{4}{*}
-{\redtext{Batched}} & \yellowtext{Consume the answer}, &
-                  \yellowtext{Fail} the computation to \\
-                    &       propagating it immediately & 
-               the \yellowtext{previous} choice point, \\
-                    &           to the context of the  & 
-                                  since the actual was \\
-                    &      \yellowtext{previous} call. & 
-                              already fully evaluated. \\
-
-\hline
-\end{tabular}}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\titulo{YapTab-Mt - Internal Architecture}
-
-\vspace{-0.3in}
-\begin{center}
-  \multiinclude[format=pdf,graphics={scale=1.53}]{\figs/internal-arch}
-\end{center}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\titulo{Our Motivation}
-
-\vspace{-0.3in}
-\begin{center}
-  \multiinclude[format=pdf,graphics={scale=1.10}]{\figs/work_stations}
-\end{center}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -311,6 +238,117 @@ BATCHED É O CONTRARIO
     \item \lenitem{\yellowtext{predicate}(computation\_id, \redtext{Answer}).}
    \end{sublista} 
 \end{lista}
+
+%%%%%%%%%%%%%%%%%%%% HERE
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\titulo{Tabling Scheduling Strategies}
+
+\begin{lista}
+\item The two most successful tabling scheduling strategies are
+  \redtext{Local} e \redtext{Batched}. They define the behavior of the
+  tabling mechanism whenever it finds a \yellowtext{new answer} for a
+  tabled call. \\ [0.3cm]
+\end{lista}
+
+FAZER FIGURA COM LOCAL VS BATCHED.
+CLUSTER THE DEPENDENCIAS EM QUE EM LOCAL AS RESPOSTAS APENAS SAO
+CONSUMIDAS SOMENTE APOS TODAS AS RESPOSTAS SEREM ENCONTRADAS. EM
+BATCHED É O CONTRARIO
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\titulo{Tabling Scheduling Strategies}
+
+\begin{lista}
+\item The two most successful tabling scheduling strategies are
+  \redtext{Local} e \redtext{Batched}. They define the behavior of the
+  tabling mechanism whenever it finds a \yellowtext{new answer} for a
+  tabled call. \\ [0.3cm]
+\end{lista}
+\centering
+\scalebox{0.87}{
+\begin{tabular}{|c@{~~~}|c@{~~~}|c|}
+\hline
+\multirow{3}{*}{\bf {Scheduling}}          &
+\multirow{3}{*}{\bf {New Answer}}          & 
+\multirow{3}{*}{\bf {Fix-Point Detection}} \\
+& & \\
+& & \\ 
+\hline \hline
+\multirow{3}{*}
+{\yellowtext{Local}} &    \redtext{Fail} the computation  & 
+                    \redtext{Consume all the answers}, \\
+                  &           to the \redtext{current} & 
+                                  propagating them to the \\
+                  &                         choice point. & 
+               context of the \redtext{previous} call. \\
+\hline \hline
+\multirow{4}{*}
+{\yellowtext{Batched}} & \redtext{Consume the answer}, &
+                  \redtext{Fail} the computation to \\
+                    &       propagating it immediately & 
+               the \redtext{previous} choice point, \\
+                    &           to the context of the  & 
+                                  since the actual was \\
+                    &      \redtext{previous} call. & 
+                              already fully evaluated. \\
+
+\hline
+\end{tabular}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\titulo{YapTab-Mt - Internal Architecture}
+
+\vspace{-0.3in}
+\begin{center}
+  \multiinclude[format=pdf,graphics={scale=1.53}]{\figs/internal-arch}
+\end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\titulo{Experimental Results - Worst Case Scenarios}
+\begin{center}
+
+\begin{tabular}{ll||cc|cc}
+\multicolumn{2}{c||}{\multirow{2}{*}{\bf Threads}} &
+\multicolumn{2}{c|}{\multirow{1}{*}{\bf NS}} &
+\multicolumn{2}{|c}{\multirow{1}{*}{\bf FS}}\\ \cline{3-6}
+& 
+& \multicolumn{1}{c}{\yellowtext{Local}}
+& \multicolumn{1}{c}{\yellowtext{Batched}}
+& \multicolumn{1}{|c}{\yellowtext{Local}}
+& \multicolumn{1}{c}{\yellowtext{Batched}}\\
+\hline\hline
+\multirow{4}{*}{\bf 1}
+& \yellowtext{\bf Min }& \redtext{0.53}& 0.55& 1.01& \redtext{0.95}\\
+& \yellowtext{\bf Avg }& \redtext{0.78}& 0.82& \redtext{1.30}& 1.46\\
+& \yellowtext{\bf Max }& 1.06& \redtext{1.05}& \redtext{1.76}& 2.33\\
+\hline
+\multirow{4}{*}{\bf 8}
+& \yellowtext{\bf Min }& 0.66& \redtext{0.63}& 1.16& \redtext{\bf  0.99}\\
+& \yellowtext{\bf Avg }& \redtext{\bf 0.85}& 0.88& \redtext{\bf 1.88}& 1.95\\
+& \yellowtext{\bf Max }& \redtext{\bf 1.12}& 1.14& \redtext{\bf 2.82}& 3.49\\
+\hline
+\multirow{4}{*}{\bf 16}
+& \yellowtext{\bf Min }& 0.85& \redtext{0.75}& 1.17& \redtext{1.06}\\
+& \yellowtext{\bf Avg }& \redtext{0.98}& 1.00& \redtext{1.97}& 2.08\\
+& \yellowtext{\bf Max }& \redtext{1.16}& 1.31& \redtext{3.14}& 3.69\\
+\hline
+\multirow{4}{*}{\bf 24}
+& \yellowtext{\bf Min }& \redtext{0.91}& 0.93& 1.16& \redtext{1.09}\\
+& \yellowtext{\bf Avg }& \redtext{1.15}& 1.16& \redtext{2.06}& 2.19\\
+& \yellowtext{\bf Max }& 1.72& \redtext{1.60}& \redtext{3.49}& 4.08\\
+\hline
+\multirow{4}{*}{\bf 32}
+& \yellowtext{\bf Min }& 1.05& \redtext{1.04}& 1.33& \redtext{1.26}\\
+& \yellowtext{\bf Avg }& 1.51& \redtext{1.49}& \redtext{2.24}& 2.41\\
+& \yellowtext{\bf Max }& \redtext{2.52}& 2.63& \redtext{3.71}& 4.51\\
+\end{tabular}
+\end{center}
+
+
+
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% \titulo{0-1 Knapsack Problem (Top-Down)}
@@ -461,39 +499,23 @@ BATCHED É O CONTRARIO
 %%   \end{sublista}
 %% \end{lista}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\titulo{Research Outline}
+
+\vspace{-0.3in}
+\begin{center}
+  \multiinclude[format=pdf,graphics={scale=1.10}]{\figs/work_stations}
+\end{center}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \titulo{Thank You !!!}
 
-\vspace{0.7cm}
-
-
-TAG CLOUD 
-\begin{center}
-  Miguel Areias and Ricardo Rocha\\
-  CRACS $\&$ INESC-TEC LA\\
-  University of Porto, Portugal\\
-  \emph{miguel-areias@dcc.fc.up.pt \hspace{1cm} ricroc@dcc.fc.up.pt}
-  
-  \vspace{0.5cm}
-  Yap Prolog: \textit{ http://www.dcc.fc.up.pt/$\sim$vsc/Yap }
-  
-  Projects SIBILA: \textit{http://cracs.fc.up.pt/} 
-
-  FCT Grant: \textit{SFRH/BD/69673/2010}
-  
-  \vspace{0.5cm}
-  \includegraphics[width=21.9cm]{\figs/logo.pdf}
-\end{center}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% \titulo{0-1 Knapsack Problem - Top-Down vs Bottom-Up}
-
-%% \vspace{-0.2in}
+%% \vspace{0.7cm}
 %% \begin{center}
-%% \animategraphics[width=23cm,autoplay,loop]{1}{\figs/knapsack-}{0}{18}
-%% \end{center}
+%% \animategraphics[width=23cm,autoplay,loop]{0.4}{\figs/thesis_tag_cloud-}{0}{3}
 
 \end{document}
 

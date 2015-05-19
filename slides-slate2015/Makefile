@@ -5,5 +5,5 @@ install:
 #	ppower4 slides
 	mv slides.pp4 slides.pdf
 	rm  slides.log
-	rm  missfont.log
-	rm  slides.aux
+#	rm  missfont.log
+#	rm  slides.aux
