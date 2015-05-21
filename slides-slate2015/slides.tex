@@ -242,61 +242,12 @@ Faculty of Sciences, University of Porto, Portugal\\
 %%%%%%%%%%%%%%%%%%%% HERE
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\titulo{Tabling Scheduling Strategies}
+\titulo{Tabling Scheduling Strategies - Local vs Batched}
 
-\begin{lista}
-\item The two most successful tabling scheduling strategies are
-  \redtext{Local} e \redtext{Batched}. They define the behavior of the
-  tabling mechanism whenever it finds a \yellowtext{new answer} for a
-  tabled call. \\ [0.3cm]
-\end{lista}
-
-FAZER FIGURA COM LOCAL VS BATCHED.
-CLUSTER THE DEPENDENCIAS EM QUE EM LOCAL AS RESPOSTAS APENAS SAO
-CONSUMIDAS SOMENTE APOS TODAS AS RESPOSTAS SEREM ENCONTRADAS. EM
-BATCHED É O CONTRARIO
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\titulo{Tabling Scheduling Strategies}
-
-\begin{lista}
-\item The two most successful tabling scheduling strategies are
-  \redtext{Local} e \redtext{Batched}. They define the behavior of the
-  tabling mechanism whenever it finds a \yellowtext{new answer} for a
-  tabled call. \\ [0.3cm]
-\end{lista}
-\centering
-\scalebox{0.87}{
-\begin{tabular}{|c@{~~~}|c@{~~~}|c|}
-\hline
-\multirow{3}{*}{\bf {Scheduling}}          &
-\multirow{3}{*}{\bf {New Answer}}          & 
-\multirow{3}{*}{\bf {Fix-Point Detection}} \\
-& & \\
-& & \\ 
-\hline \hline
-\multirow{3}{*}
-{\yellowtext{Local}} &    \redtext{Fail} the computation  & 
-                    \redtext{Consume all the answers}, \\
-                  &           to the \redtext{current} & 
-                                  propagating them to the \\
-                  &                         choice point. & 
-               context of the \redtext{previous} call. \\
-\hline \hline
-\multirow{4}{*}
-{\yellowtext{Batched}} & \redtext{Consume the answer}, &
-                  \redtext{Fail} the computation to \\
-                    &       propagating it immediately & 
-               the \redtext{previous} choice point, \\
-                    &           to the context of the  & 
-                                  since the actual was \\
-                    &      \redtext{previous} call. & 
-                              already fully evaluated. \\
-
-\hline
-\end{tabular}}
-
+\vspace{-0.3in}
+\begin{center}
+  \multiinclude[format=pdf,graphics={scale=1.53}]{\figs/local_vs_batched}
+\end{center}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \titulo{YapTab-Mt - Internal Architecture}
@@ -306,10 +257,15 @@ BATCHED É O CONTRARIO
   \multiinclude[format=pdf,graphics={scale=1.53}]{\figs/internal-arch}
 \end{center}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\titulo{Private Answer Chaining - Key Idea}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\titulo{Private Answer Chaining - Key Ideas}
+\titulo{Private Answer Chaining - Internals}
+
+
+
 
 
 
@@ -354,7 +310,9 @@ BATCHED É O CONTRARIO
 \end{tabular}
 \end{center}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\titulo{Conclusions and Further Work}
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
