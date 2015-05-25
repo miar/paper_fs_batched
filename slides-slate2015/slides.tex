@@ -324,7 +324,37 @@ Faculty of Sciences, University of Porto, Portugal\\
 \titulo{Conclusions and Further Work}
 
 
-use this with mode-directed tabling
+\begin{lista}
+\item \redtext{Batched scheduling} is a \yellowtext{useful strategy}
+  in tabled logic programs that:
+  \begin{sublista}
+  \item require an \yellowtext{eager propagation} of answers.
+  \item do not require the complete set of answers to be found
+    (\yellowtext{partial evaluation} of the \yellowtext{search
+    space}). \pause
+  \end{sublista} 
+
+\item We have presented the \redtext{PAC (Private Answer Chaining)}
+  strategy that \yellowtext{enables} the \yellowtext{combination} of
+  \redtext{Batched scheduling} with \redtext{Full-Sharing}.
+  \begin{sublista}
+    \item Split's \yellowtext{answers representation (public)} and
+      \yellowtext{answer propagation (private)}.
+    %% \item To keep the efficiency in accessing propagated answers, we
+    %%   implemented a hashing mechanism. \pause
+  \end{sublista}
+\item Experimental results showed that the \redtext{PAC} strategy is a
+  \yellowtext{good first approach}, however there is still
+  \yellowtext{room for improvement}. \pause
+
+\item Further work will include: 
+  \begin{sublista}
+  \item Use \yellowtext{timestamped tries} to \yellowtext{avoid}
+    the search for the already propagated answers.    
+  \item Seek for \yellowtext{new real-world problems} that allow us to
+    improve and consolidate our framework.
+  \end{sublista}
+\end{lista}
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% \titulo{0-1 Knapsack Problem (Top-Down)}
