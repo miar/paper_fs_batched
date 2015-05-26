@@ -510,22 +510,38 @@ difference between both strategies is significantly higher.
 
 \section{Conclusions and Further Work}
 
-We have presented a simple and novel approach for combining the FS
-design with batched scheduling. Experimental results showed that on
-average, the extra structures required for the combination do not seem
-to have a big impact in the performance. Further work will include
-experimentation in other real world applications.
+Local and batched scheduling are arguably two of the most well-known
+tabling scheduling techniques. The major difference between them is
+that local propagates answers only after all answer are found, while
+batched propagates answers immediately after they are found. Batched
+scheduling is a useful strategy in tabled logic programs that require
+an eager propagation of answers and/or do not require the complete set
+of answers to be found (partial evaluation of the search space). 
+
+In this work, we have presented the PAC strategy, which is a simple
+and novel approach for combining the FS design with batched
+scheduling. PAC splits answer representation from answer propagation,
+allowing the first to be publicly shared among threads while the
+second is private to each thread. 
+
+Experimental results in worst-case scenarios showed that on average,
+the PAC strategy does not seem to have a big impact in the
+performance, however it still leaves room for further improvements
+specially in the extra structures required to control the propagated
+answers. Further work will include the usage of time-stamped tries to
+minimize the search for the propagated answers and new real-world
+problems that will allow us to improve and consolidate our framework.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section*{Acknowledgments}
 
-This work is partially funded by the ERDF (European Regional
-Development Fund) through the COMPETE Programme and by FCT (Portuguese
-Foundation for Science and Technology) within projects SIBILA
-(NORTE-07-0124-FEDER-000059) and PEst
-(FCOMP-01-0124-FEDER-037281). Miguel Areias is funded by the FCT grant
-SFRH/BD/69673/2010.
+%% This work is partially funded by the ERDF (European Regional
+%% Development Fund) through the COMPETE Programme and by FCT (Portuguese
+%% Foundation for Science and Technology) within projects SIBILA
+%% (NORTE-07-0124-FEDER-000059) and PEst
+%% (FCOMP-01-0124-FEDER-037281). Miguel Areias is funded by the FCT grant
+%% SFRH/BD/69673/2010.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
