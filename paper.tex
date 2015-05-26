@@ -209,12 +209,12 @@ designs for a situation where several threads are evaluating the same
 tabled subgoal call $call\_i$.
 
 \begin{figure}[!ht]
-%\vspace{-0.5\intextsep}
+\vspace{-0.5\intextsep}
 \centering
 \includegraphics[width=9.5cm]{figures/yap-mt.pdf}
 \caption{Yap's multithreaded table space organization for the NS and FS designs}
 \label{fig_yap_mt_support}
-%\vspace{-1.0\intextsep}
+\vspace{-1.0\intextsep}
 \end{figure}
 
 When using the NS design, each thread allocates fully private tables
@@ -267,6 +267,16 @@ answers and/or do not require the complete set of answers to be found
 
 \section{Extending Full-Sharing with Batched Scheduling}
 
+\begin{wrapfigure}{r}{6.5cm}
+\vspace{-\intextsep}
+\centering
+\includegraphics[width=6.5cm]{figures/pcc_key-idea.pdf}
+\caption{PAC splits answer representation and answer propagation}
+\label{fig_tabtries_pcc_key-idea}
+\vspace{-0.5\intextsep}
+\end{wrapfigure}
+
+
 In this section, we describe our proposal to support the combination
 of batched scheduling with the FS design. Remember that batched
 scheduling requires further support to work with the FS design
@@ -290,14 +300,6 @@ thread. Thus, with PAC, whenever a answer appears during the
 evaluation, a thread knows if the answer was already propagated or not
 propagated, just by consulting its own subgoal frame data structure.
 
-\begin{wrapfigure}{r}{6.5cm}
-\vspace{-\intextsep}
-\centering
-\includegraphics[width=6.5cm]{figures/pcc_key-idea.pdf}
-\caption{PAC splits answer representation and answer propagation}
-\label{fig_tabtries_pcc_key-idea}
-\vspace{-0.5\intextsep}
-\end{wrapfigure}
 
 
 %% \begin{figure}[!ht]
@@ -325,13 +327,13 @@ our PAC's proposal for a situation where several threads are
 evaluating the same tabled subgoal call $call\_i$.
 
 \begin{figure}[!ht]
-%\vspace{-\intextsep}
+\vspace{-\intextsep}
 \centering
 \includegraphics[width=10.5cm]{figures/pcc.pdf}
 \caption{PAC's data structures for (a) private and (b) public
   chaining}
 \label{fig_tabtries_pcc}
-%\vspace{-1.0\intextsep}
+\vspace{-0.5\intextsep}
 \end{figure}
 
 Figure~\ref{fig_tabtries_pcc}(a) shows then a situation where two
@@ -362,11 +364,11 @@ Going back to Fig.~\ref{fig_tabtries_pcc}(a), the PAC's data
 structures represent then two different situations where threads can
 be evaluating a subgoal call. Thread $T_1$ has only found one answer
 and it is using a direct answer chaining to access the node
-$LN_1$. Thread $T_{k-1}$ was already found three answers for the
+$LN_1$. Thread $T_{k-2}$ was already found three answers for the
 subgoal call and it is using the hash trie mechanism within its
 private chaining. Please note that the answer nodes are still chained
 between themselves, thus that repeated calls belonging to thread
-$T_{k-1}$ can consume the answers as in the original mechanism.
+$T_{k-2}$ can consume the answers as in the original mechanism.
 
 Figure~\ref{fig_tabtries_pcc}(b) shows the state of the subgoal call
 after completion. When a thread $T$ completes a subgoal call, it frees
@@ -379,7 +381,7 @@ to create a chain inside the answer trie. Since this procedure is done
 inside a critical region, no more than one thread can be doing this
 chaining process. Thus, in Fig.~\ref{fig_tabtries_pcc}(b), we are
 showing the situation where the subgoal call is completed and both
-threads $T_1$ and $T_{k-1}$ have already chained the leaf nodes inside
+threads $T_1$ and $T_{k-2}$ have already chained the leaf nodes inside
 the answer trie and removed their private chaining structures.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -482,7 +484,7 @@ maximum and standard deviation overhead ratios.
 & \multicolumn{1}{c}{\bf Local}
 & \multicolumn{1}{c}{\bf Batched}
 & \multicolumn{1}{|c}{\bf Local}
-& \multicolumn{1}{c}{\bf Batched (PAC)}\\
+& \multicolumn{1}{c}{\bf Batched}\\
 \hline\hline
 \multirow{4}{*}{\bf 1}
 & {\bf Min }& {\bf 0.53}& 0.55& 1.01& {\bf 0.95}\\
