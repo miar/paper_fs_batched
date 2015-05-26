@@ -291,14 +291,23 @@ thread. Thus, with PAC, whenever a answer appears during the
 evaluation, a thread knows if the answer was already propagated or not
 propagated, just by consulting its own subgoal frame data structure.
 
-\begin{figure}[!ht]
-%\vspace{-\intextsep}
+\begin{wrapfigure}{r}{6.5cm}
+\vspace{-\intextsep}
 \centering
-\includegraphics[width=10.5cm]{figures/pcc_key-idea.pdf}
+\includegraphics[width=6.5cm]{figures/pcc_key-idea.pdf}
 \caption{PAC splits answer representation and answer propagation}
 \label{fig_tabtries_pcc_key-idea}
-%\vspace{-1.0\intextsep}
-\end{figure}
+\vspace{-0.5\intextsep}
+\end{wrapfigure}
+
+
+%% \begin{figure}[!ht]
+%% \centering
+%% \includegraphics[width=7.5cm]{figures/pcc_key-idea.pdf}
+%% \caption{PAC splits answer representation and answer propagation}
+%% \label{fig_tabtries_pcc_key-idea}
+%% \end{figure}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -427,10 +436,11 @@ answer \emph{ANS} to the current execution environment (line 10).
 
 \section{Performance Analysis}
 
-We now present experimental results about the usage of the FS design
-with batched scheduling. To put results in perspective, we will be
-showing also the results for local scheduling and for the NS
-design.
+We now present experimental results about the usage of PAC in the FS
+design with batched scheduling. Since without PAC the FS design would
+not be able to be used with batched scheduling, to put results in
+perspective, we will be showing also the results for local scheduling
+and for the NS design.
 
 The environment for our experiments was a machine with 32-Core AMD
 Opteron (TM) Processor 6274 (2 sockets with 16 cores each) with 32G of
@@ -438,9 +448,9 @@ main memory, running the Linux kernel is the 3.16.7-200.fc20.x86\_64
 with Yap Prolog 6.3. For the experiments, we used the \emph{TabMalloc}
 memory allocator~\cite{Areias-12b} and the set of benchmarks described
 in~\cite{Areias-12b}. These benchmarks create \emph{worst case
-  scenarios}, where we are able to show the lowest bounds in terms of
-performance that each design might achieve when applied/used with
-other real world applications/programs.
+  scenarios}, where we are able to show the lowest bounds of
+performance that each design might achieve when applied/used in other
+real world applications/programs.
 
 Table~\ref{tab_batched_overhead} shows the overhead ratios, when
 compared with the NS design with 1 thread (running with local
@@ -475,7 +485,7 @@ maximum and standard deviation overhead ratios.
 & \multicolumn{1}{c}{\bf Local}
 & \multicolumn{1}{c}{\bf Batched}
 & \multicolumn{1}{|c}{\bf Local}
-& \multicolumn{1}{c}{\bf Batched}\\
+& \multicolumn{1}{c}{\bf Batched (PAC)}\\
 \hline\hline
 \multirow{4}{*}{\bf 1}
 & {\bf Min }& {\bf 0.53}& 0.55& 1.01& {\bf 0.95}\\
