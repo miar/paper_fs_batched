@@ -100,12 +100,21 @@ and \emph{batched scheduling}~\cite{Freire-96}. Local scheduling tries
 to complete subgoals as soon as possible. When new answers are found,
 they are added to the table space and the evaluation fails. Answers
 are only returned when all program clauses for the subgoal at hand
-were resolved. Batched scheduling favors forward execution first,
-backtracking next, and consuming answers or completion last. It thus
-tries to delay the need to move around the search tree by batching the
-return of answers to repeated subgoals. When new answers are found for
-a particular tabled subgoal, they are added to the table space and the
-evaluation continues.
+were resolved, i.e. after the complete evaluation of subgoal's search
+space. Local scheduling has the advantage of minimizing the size of
+clusters of dependent subgoals, however it delays propagation of
+answers and requires the complete evaluation of the search
+space. 
+
+Batched scheduling favors forward execution first, backtracking next,
+and consuming answers or completion last. It thus tries to delay the
+need to move around the search tree by batching the return of answers
+to repeated subgoals. When new answers are found for a particular
+tabled subgoal, they are added to the table space and the evaluation
+continues. Batched scheduling can be an useful strategy in tabled
+logic programs that require an eager propagation of answers and/or do
+not require the complete set of answers to be found (partial
+evaluation of the search space).
 
 With the FS design, all tables are shared. Thus, since several threads
 can be inserting answers in the same table, when an answer already
@@ -249,7 +258,11 @@ space and the execution continues. For some situations, this results
 in creating dependencies to older subgoals, therefore enlarging the
 current CDS and delaying the fix-point that guarantees that all
 dependent subgoals in a CDS are completely
-evaluated~\cite{Sagonas-98}.
+evaluated~\cite{Sagonas-98}. Batched scheduling can be an useful
+strategy in tabled logic programs that require an eager propagation of
+answers and/or do not require the complete set of answers to be found
+(partial evaluation of the search space).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -266,6 +279,17 @@ an extension to the table space data structures, which we named
 \emph{Private Answer Chaining} (PAC), as a way to keep track, per
 thread and subgoal call, of the answers that were already found and
 propagated to the thread's repeated calls.
+
+\begin{figure}[!ht]
+%\vspace{-\intextsep}
+\centering
+\includegraphics[width=10.5cm]{figures/pcc_key-idea.pdf}
+\caption{PAC splits answer propagation and answer representation}
+\label{fig_tabtries_pcc_key-idea}
+%\vspace{-1.0\intextsep}
+\end{figure}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -521,8 +545,8 @@ of answers to be found (partial evaluation of the search space).
 In this work, we have presented the PAC strategy, which is a simple
 and novel approach for combining the FS design with batched
 scheduling. PAC splits answer representation from answer propagation,
-allowing the first to be publicly shared among threads while the
-second is private to each thread. 
+and allows the first to be publicly shared among threads while the
+second to be private to each thread.
 
 Experimental results in worst-case scenarios showed that on average,
 the PAC strategy does not seem to have a big impact in the
