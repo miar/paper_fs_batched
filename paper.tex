@@ -524,7 +524,14 @@ By observing Table~\ref{tab_batched_overhead}, we can see that, for 1
 thread, on the minimum overhead ratio, local scheduling is better on
 the NS design, while batched scheduling is better in the FS
 design. For the average and maximum overhead ratios, in the FS design,
-the best strategy is always the local scheduling.   
+the best strategy is always the local scheduling. Additionally, the
+difference between local and batched scheduling in the FS is higher
+than in the NS design, which indicates the overhead that the PAC
+strategy brings to the FS design. Recall, whenever an answer is found
+during the evaluation, PAC requires threads to traverse their private
+consumer data structures to check if the answer was already
+propagated. This is the reason for overhead that we are observing in
+the experimental results. 
 
 As we scale the number of threads, for the NS design both scheduling
 strategies have similar minimum, average and maximum overhead
@@ -533,21 +540,14 @@ for the batched scheduling. For the average and maximum overhead
 ratio, local scheduling is always better than batched
 scheduling. However, for the average ratio, the results between both
 strategies is quite close. For the maximum overhead ratio, the
-difference between both strategies is significantly higher. 
+difference between both strategies is significantly higher than in the
+NS design.
 
-%% As we scale the number of threads, one can observe that,
-%% for the NS design both scheduling strategies have similar minimum,
-%% average and maximum overhead ratios. For the FS design, the best
-%% minimum overhead ratio on $1$, $8$, $16$, $24$ and $32$ threads is
-%% always the batched scheduling. For the average and maximum overhead
-%% ratio, local scheduling is always better than batched
-%% scheduling. However, for the average ratio, the results between both
-%% strategies is quite close. We consider this to be quite significant,
-%% once the FS design with batched scheduling requires the support of the
-%% PAC procedure. For the maximum overhead ratio, the difference between
-%% both strategies is higher than for the average overhead ratio, however
-%% we hope to reduce the difference with further improvements in the PAC
-%% procedure.
+In resume, the experimental results show that on average, the PAC
+strategy does not seem to have a big impact in the performance,
+however it still leaves room for further improvements, because the
+difference between local and batched scheduling is higher in the FS
+design than in the NS design.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
