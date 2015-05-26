@@ -274,22 +274,31 @@ scheduling requires further support to work with the FS design
 because, with batched scheduling, we have to detect when a newly found
 answer is also a new answer for the thread at hand in order to ensure
 that new answers for a given subgoal call are correctly propagated one
-and only once to all thread’s repeated calls. To solve that, we propose
-an extension to the table space data structures, which we named
-\emph{Private Answer Chaining} (PAC), as a way to keep track, per
-thread and subgoal call, of the answers that were already found and
-propagated to the thread's repeated calls.
+and only once to all thread’s repeated calls. In the FS design answer
+representation and answer propagation is stored in the answer trie
+data structure, thus threads are unable to know if they have or not
+have propagated an answer whenever it appears during the
+evaluation. To solve that, we propose an extension to the table space
+data structures, which we named \emph{Private Answer Chaining} (PAC),
+as a way to keep track, per thread and subgoal call, of the answers
+that were already found and propagated to the thread's repeated
+calls. Figure~\ref{fig_tabtries_pcc_key-idea} illustrates the key idea
+of the PAC strategy. In a nutshell, PAC splits answer representation
+from answer propagation, and allows the first to be kept publicly
+shared among threads in the answer trie data structure, and the second
+to be privately stored in the subgoal frame data structure of each
+thread. Thus, with PAC, whenever a answer appears during the
+evaluation, a thread knows if the answer was already propagated or not
+propagated, just by consulting its own subgoal frame data structure.
 
 \begin{figure}[!ht]
 %\vspace{-\intextsep}
 \centering
 \includegraphics[width=10.5cm]{figures/pcc_key-idea.pdf}
-\caption{PAC splits answer propagation and answer representation}
+\caption{PAC splits answer representation and answer propagation}
 \label{fig_tabtries_pcc_key-idea}
 %\vspace{-1.0\intextsep}
 \end{figure}
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
