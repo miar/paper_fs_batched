@@ -45,10 +45,10 @@ allocates fully private tables for each new tabled subgoal called
 during its computation, to a Full-Sharing design, where threads share
 the complete table space. Arguably, batched scheduling is one of the
 most successful tabling scheduling strategies. In this work, we
-propose an extension of the Full-Sharing design to support batched
-scheduling. Experimental results show that, despite the extra data
-structures required to support the extension, the FS design remains
-quite competitive.\\
+propose the PAC strategy to combine the Full-Sharing design with
+batched scheduling. Experimental results show that, PAC is a good
+first approach, since with it the FS design remains quite
+competitive.\\
 
 \textbf{Keywords:} Logic Programming, Multithreading, Tabling, Scheduling.
 \end{abstract}
@@ -113,8 +113,7 @@ to repeated subgoals. When new answers are found for a particular
 tabled subgoal, they are added to the table space and the evaluation
 continues. Batched scheduling can be an useful strategy in tabled
 logic programs that require an eager propagation of answers and/or do
-not require the complete set of answers to be found (partial
-evaluation of the search space).
+not require the complete set of answers to be found.
 
 With the FS design, all tables are shared. Thus, since several threads
 can be inserting answers in the same table, when an answer already
@@ -168,12 +167,12 @@ they are stored in their tables and later returned to all similar
 calls.
 
 \begin{wrapfigure}{r}{4.5cm}
-%\vspace{-\intextsep}
+\vspace{-\intextsep}
 \centering
 \includegraphics[width=4.5cm]{figures/table-space.pdf}
 \caption{Table space organization}
 \label{fig_table_space}
-%\vspace{-0.5\intextsep}
+\vspace{-0.5\intextsep}
 \end{wrapfigure}
 
 Figure~\ref{fig_table_space} shows the table space organization of the
@@ -202,7 +201,7 @@ it implements three designs for concurrent tabling support that vary
 from a \emph{No-Sharing} (NS) design, where each thread allocates
 fully private tables for each new tabled subgoal called during its
 computation, to a \emph{Full-Sharing} (FS) design, where threads share
-the complete table space. Figure~\ref{fig_table_space} shows Yap's
+the complete table space. Figure~\ref{fig_yap_mt_support} shows Yap's
 multithreaded table space organization for the NS and FS designs,
 where an interface layer abstracts the design being used at the engine
 level. The figure illustrates the main differences between the two
@@ -440,17 +439,15 @@ We now present experimental results about the usage of PAC in the FS
 design with batched scheduling. Since without PAC the FS design would
 not be able to be used with batched scheduling, to put results in
 perspective, we will be showing also the results for local scheduling
-and for the NS design.
-
-The environment for our experiments was a machine with 32-Core AMD
-Opteron (TM) Processor 6274 (2 sockets with 16 cores each) with 32G of
-main memory, running the Linux kernel is the 3.16.7-200.fc20.x86\_64
-with Yap Prolog 6.3. For the experiments, we used the \emph{TabMalloc}
-memory allocator~\cite{Areias-12b} and the set of benchmarks described
-in~\cite{Areias-12b}. These benchmarks create \emph{worst case
-  scenarios}, where we are able to show the lowest bounds of
-performance that each design might achieve when applied/used in other
-real world applications/programs.
+and for the NS design. The environment for our experiments was a
+machine with 32-Core AMD Opteron (TM) Processor 6274 (2 sockets with
+16 cores each) with 32G of main memory, running the Linux kernel is
+the 3.16.7-200.fc20.x86\_64 with Yap Prolog 6.3. For the experiments,
+we used the \emph{TabMalloc} memory allocator~\cite{Areias-12b} and
+the set of benchmarks described in~\cite{Areias-12b}. These benchmarks
+create \emph{worst case scenarios}, where we are able to show the
+lowest bounds of performance that each design might achieve when
+applied/used in other real world applications/programs.
 
 Table~\ref{tab_batched_overhead} shows the overhead ratios, when
 compared with the NS design with 1 thread (running with local
@@ -530,24 +527,21 @@ than in the NS design, which indicates the overhead that the PAC
 strategy brings to the FS design. Recall, whenever an answer is found
 during the evaluation, PAC requires threads to traverse their private
 consumer data structures to check if the answer was already
-propagated. This is the reason for overhead that we are observing in
-the experimental results. 
-
-As we scale the number of threads, for the NS design both scheduling
-strategies have similar minimum, average and maximum overhead
-ratios. For the FS design, the best minimum overhead ratio is always
-for the batched scheduling. For the average and maximum overhead
-ratio, local scheduling is always better than batched
-scheduling. However, for the average ratio, the results between both
-strategies is quite close. For the maximum overhead ratio, the
-difference between both strategies is significantly higher than in the
-NS design.
-
-In resume, the experimental results show that on average, the PAC
-strategy does not seem to have a big impact in the performance,
-however it still leaves room for further improvements, because the
-difference between local and batched scheduling is higher in the FS
-design than in the NS design.
+propagated. This is the reason for difference in the overheads that we
+are observing in the experimental results. As we scale the number of
+threads, for the NS design both scheduling strategies have similar
+minimum, average and maximum overhead ratios. For the FS design, the
+best minimum overhead ratio is always for the batched scheduling. For
+the average and maximum overhead ratio, local scheduling is always
+better than batched scheduling. However, for the average ratio, the
+results between both strategies is quite close. For the maximum
+overhead ratio, the difference between both strategies is
+significantly higher than in the NS design. In conclusion,
+experimental results show that on average, the PAC strategy does not
+seem to have a big impact in the performance, however it still leaves
+room for further improvements. The difference between both local and
+batched scheduling is significantly higher in the FS design than in
+the NS design.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -559,10 +553,9 @@ that local propagates answers only after all answer are found, while
 batched propagates answers immediately after they are found. Batched
 scheduling is a useful strategy in tabled logic programs that require
 an eager propagation of answers and/or do not require the complete set
-of answers to be found (partial evaluation of the search space). 
-
-In this work, we have presented the PAC strategy, which is a simple
-and novel approach for combining the FS design with batched
+of answers to be found (partial evaluation of the search space). In
+this work, we have presented the PAC strategy, which is a simple and
+novel approach for combining the FS design with batched
 scheduling. PAC splits answer representation from answer propagation,
 and allows the first to be publicly shared among threads while the
 second to be private to each thread.
@@ -578,6 +571,13 @@ problems that will allow us to improve and consolidate our framework.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section*{Acknowledgments}
+
+This work is funded by the project SIBILA (NORTE-07-0124-FEDER-000059)
+under the North Portugal Regional Operational Programme (ON.2 – O Novo
+Norte) and under the National Strategic Reference Framework (NSRF),
+through the European Regional Development Fund (ERDF), and by national
+funds, through the Portuguese funding agency, Fundação para a Ciência
+e a Tecnologia (FCT).
 
 %% This work is partially funded by the ERDF (European Regional
 %% Development Fund) through the COMPETE Programme and by FCT (Portuguese
