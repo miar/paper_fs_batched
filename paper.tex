@@ -59,7 +59,7 @@ competitive.\\
 
 Tabling~\cite{Chen-96} is an implementation technique that overcomes
 some limitations of traditional Prolog systems in dealing with
-redundant sub-computations and recursion. Tabling consists of storing
+redundant sub-computations and recursion. Tabling consists in storing
 intermediate answers for subgoals in a proper data structure, called
 the \emph{table space}, so that they can be reused when a repeated
 subgoal appears during the resolution process. Tabling has become a
@@ -125,7 +125,7 @@ scheduling that requires further support to work with the FS design
 since, with batched scheduling, only repeated answers should fail. We
 have thus to detect when a newly found answer is also a new answer for
 the thread at hand in order to ensure that new answers for a given
-subgoal call are correctly propagated one and only once to all
+subgoal call are correctly propagated once and only once to all
 thread's repeated calls.
  
 In this work, we propose an extension to the table space data
@@ -443,10 +443,10 @@ not be able to be used with batched scheduling, to put results in
 perspective, we will be showing also the results for local scheduling
 and for the NS design. The environment for our experiments was a
 machine with 32-Core AMD Opteron (TM) Processor 6274 (2 sockets with
-16 cores each) with 32G of main memory, running the Linux kernel is
-the 3.16.7-200.fc20.x86\_64 with Yap Prolog 6.3. For the experiments,
-we used the \emph{TabMalloc} memory allocator~\cite{Areias-12b} and
-the set of benchmarks described in~\cite{Areias-12b}. These benchmarks
+16 cores each) with 32G of main memory, running the Linux kernel
+3.16.7-200.fc20.x86\_64 with Yap Prolog 6.3. For the experiments, we
+used the \emph{TabMalloc} memory allocator~\cite{Areias-12b} and the
+set of benchmarks described in~\cite{Areias-12b}. These benchmarks
 create \emph{worst case scenarios}, where we are able to show the
 lowest bounds of performance that each design might achieve when
 applied/used in other real world applications/programs.
@@ -536,7 +536,7 @@ minimum, average and maximum overhead ratios. For the FS design, the
 best minimum overhead ratio is always for the batched scheduling. For
 the average and maximum overhead ratio, local scheduling is always
 better than batched scheduling. However, for the average ratio, the
-results between both strategies is quite close. For the maximum
+results between both strategies are quite close. For the maximum
 overhead ratio, the difference between both strategies is
 significantly higher than in the NS design. In conclusion,
 experimental results show that on average, the PAC strategy does not
