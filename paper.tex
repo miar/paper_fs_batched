@@ -31,22 +31,21 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{abstract}
-Tabling is an implementation technique that overcomes some limitations
-of traditional Prolog systems in dealing with redundant
-sub-computations and recursion. Multithreading in Prolog is the
-ability to concurrently perform computations, in which each
-computation runs independently but shares the program clauses. When
-multithreading is combined with tabling, we have the best of both
-worlds, since we can exploit the combination of higher procedural
-control with higher declarative semantics. To support this
-combination, the Yap Prolog system has, at engine level, multiple
-designs that vary from a No-Sharing design, where each thread
-allocates fully private tables for each new tabled subgoal called
-during its computation, to a Full-Sharing design, where threads share
-the complete table space. Arguably, batched scheduling is one of the
-most successful tabling scheduling strategies. In this work, we
-propose the PAC strategy to combine the Full-Sharing design with
-batched scheduling. Experimental results show that, PAC is a good
+Tabling is a technique that overcomes some limitations of traditional
+Prolog systems in dealing with redundant sub-computations and
+recursion. Multithreading in Prolog is the ability to concurrently
+perform computations, in which each computation runs independently but
+shares the program clauses. When multithreading is combined with
+tabling, we have the best of both worlds, since we can exploit the
+combination of higher procedural control with higher declarative
+semantics. To support this combination, the Yap Prolog system has, at
+engine level, multiple designs that vary from a No-Sharing design,
+where each thread allocates fully private tables for each new tabled
+subgoal called during its computation, to a Full-Sharing design, where
+threads share the complete table space. Arguably, batched scheduling
+is one of the most successful tabling scheduling strategies. In this
+work, we propose the PAC strategy to combine the Full-Sharing design
+with batched scheduling. Experimental results show that, PAC is a good
 first approach, since with it the FS design remains quite
 competitive.\\
 
@@ -65,11 +64,8 @@ the \emph{table space}, so that they can be reused when a repeated
 subgoal appears during the resolution process. Tabling has become a
 popular and successful technique thanks to the ground-breaking work in
 the XSB Prolog system and in particular in the SLG-WAM
-engine~\cite{Sagonas-98}, the most successful engine of XSB. The
-success of SLG-WAM led to several alternative implementations that
-differ in the execution rule, in the data-structures used to implement
-tabling, and in the changes to the underlying Prolog
-engine. Implementations of tabling are now widely available in systems
+engine~\cite{Sagonas-98}, the most successful engine of
+XSB. Implementations of tabling are now widely available in systems
 like Yap Prolog, B-Prolog, ALS-Prolog, Mercury, Ciao Prolog and more
 recently Picat.
 
@@ -81,15 +77,13 @@ higher procedural control with higher declarative semantics. To the
 best of our knowledge, XSB~\cite{Marques-08} and Yap~\cite{Areias-12a}
 are the only Prolog systems that support the combination of
 multithreading with tabling. Yap implements a SWI-Prolog compatible
-multithreading library~\cite{Wielemaker-03}. Yap's threads have their
-own execution stacks and only share the code area where predicates,
-records, flags and other global non-backtrackable data are stored. For
-multithreaded tabled evaluation, a thread views its tables as private
-but, at the engine level, Yap has three
-designs~\cite{Areias-12a}. These designs vary from a \emph{No-Sharing}
-(NS) design, where each thread allocates private tables for each new
-tabled subgoal called during its evaluation, to a \emph{Full-Sharing}
-(FS) design, where threads share the complete table space.
+multithreading library~\cite{Wielemaker-03}. For multithreaded tabled
+evaluation, a thread views its tables as private but, at the engine
+level, Yap has three designs~\cite{Areias-12a}. These designs vary
+from a \emph{No-Sharing} (NS) design, where each thread allocates
+private tables for each new tabled subgoal called during its
+evaluation, to a \emph{Full-Sharing} (FS) design, where threads share
+the complete table space.
 
 The decision about the evaluation flow is determined by the
 \emph{scheduling strategy}. Different strategies may have a
@@ -98,13 +92,10 @@ ordering of solutions to the query goal. Arguably, the two most
 successful tabling scheduling strategies are \emph{local scheduling}
 and \emph{batched scheduling}~\cite{Freire-96}. Local scheduling tries
 to complete subgoals as soon as possible. When new answers are found,
-they are added to the table space and the evaluation fails. Answers
-are only returned when all program clauses for the subgoal at hand
-were resolved, i.e. after the complete evaluation of subgoal's search
-space. Local scheduling has the advantage of minimizing the size of
-clusters of dependent subgoals, however it delays propagation of
-answers and requires the complete evaluation of the search
-space. 
+they are added to the table space and the evaluation fails. Local
+scheduling has the advantage of minimizing the size of clusters of
+dependent subgoals, however it delays propagation of answers and
+requires the complete evaluation of the search space. 
 
 Batched scheduling favors forward execution first, backtracking next,
 and consuming answers or completion last. It thus tries to delay the
@@ -133,15 +124,13 @@ were already found and already propagated. We discuss in detail our
 proposal for extending the FS design with batched scheduling and we
 present a performance analysis comparison between local and batched
 scheduling. Experimental results show that, despite the extra PAC data
-structures required to support batched scheduling with the FS design,
-the execution time of the combination is still quite competitive when
-comparing against the FS design with local scheduling. 
+structures required, the execution time is still quite competitive.
 
 The remainder of the paper is organized as follows. First, we briefly
-introduce some background and related work. Then, we describe our
-approach for combining batched scheduling with the FS design and we
-discuss the most important implementation details. Finally, we present
-experimental results and we end by outlining some conclusions.
+introduce some background and related work. Then, we describe our PAC
+approach and we discuss the most important implementation
+details. Finally, we present experimental results and we end by
+outlining some conclusions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -208,7 +197,7 @@ tabled subgoal call $call\_i$.
 \includegraphics[width=9.5cm]{figures/yap-mt.pdf}
 \caption{Yap's multithreaded table space organization for the NS and FS designs}
 \label{fig_yap_mt_support}
-\vspace{-1.0\intextsep}
+\vspace{-0.5\intextsep}
 \end{figure}
 
 When using the NS design, each thread allocates fully private tables
@@ -240,20 +229,19 @@ other words, local scheduling tries to keep a CDS as minimal as
 possible, thus creating less complex dependencies between subgoals,
 which causes a sooner completion of subgoals.
 
-On the other hand, batched scheduling schedules the evaluation of a
-program in a depth-first manner. It favors the forward execution first
-instead of backtracking, leaving the consumption of answers and
-completion for last. It thus tries to delay the need to move around
-the search tree by batching the return of answers. When new answers
-are found for a particular tabled subgoal, they are added to the table
-space and the execution continues. For some situations, this results
-in creating dependencies to older subgoals, therefore enlarging the
-current CDS and delaying the fix-point that guarantees that all
-dependent subgoals in a CDS are completely
-evaluated~\cite{Sagonas-98}. Batched scheduling can be an useful
-strategy in tabled logic programs that require an eager propagation of
-answers and/or do not require the complete set of answers to be found
-(partial evaluation of the search space).
+On the other hand, batched scheduling evaluates a tabled logic program
+in a depth-first manner. It favors the forward execution first instead
+of backtracking, leaving the consumption of answers and completion for
+last. It thus tries to delay the need to move around the search tree
+by batching the return of answers. When new answers are found for a
+particular tabled subgoal, they are added to the table space and the
+execution continues. For some situations, this results in creating
+dependencies to older subgoals, therefore enlarging the current CDS
+and delaying the fix-point that guarantees that all dependent subgoals
+in a CDS are completely evaluated~\cite{Sagonas-98}. Batched
+scheduling can be an useful strategy in tabled logic programs that
+require an eager propagation of answers and/or do not require the
+complete set of answers to be found.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -261,7 +249,7 @@ answers and/or do not require the complete set of answers to be found
 \section{Extending Full-Sharing with Batched Scheduling}
 
 \begin{wrapfigure}{r}{6.5cm}
-\vspace{-\intextsep}
+\vspace{-0.5\intextsep}
 \centering
 \includegraphics[width=6.5cm]{figures/pcc_key-idea.pdf}
 \caption{PAC splits answer representation and answer propagation}
@@ -269,14 +257,8 @@ answers and/or do not require the complete set of answers to be found
 \vspace{-0.5\intextsep}
 \end{wrapfigure}
 
-
 In this section, we describe our proposal to support the combination
-of batched scheduling with the FS design. Remember that batched
-scheduling requires further support to work with the FS design
-because, with batched scheduling, we have to detect when a newly found
-answer is also a new answer for the thread at hand in order to ensure
-that new answers for a given subgoal call are correctly propagated one
-and only once to all thread’s repeated calls. In the FS design answer
+of batched scheduling with the FS design. In the FS design answer
 representation and answer propagation is stored in the answer trie
 data structure, thus threads are unable to know if they have or not
 have propagated an answer whenever it appears during the
@@ -289,29 +271,16 @@ of the PAC strategy. In a nutshell, PAC splits answer representation
 from answer propagation, and allows the first to be kept publicly
 shared among threads in the answer trie data structure, and the second
 to be privately stored in the subgoal frame data structure of each
-thread. Thus, with PAC, whenever a answer appears during the
-evaluation, a thread knows if the answer was already propagated or not
-propagated, just by consulting its own subgoal frame data structure.
-
-
-
-%% \begin{figure}[!ht]
-%% \centering
-%% \includegraphics[width=7.5cm]{figures/pcc_key-idea.pdf}
-%% \caption{PAC splits answer representation and answer propagation}
-%% \label{fig_tabtries_pcc_key-idea}
-%% \end{figure}
-
+thread.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Our Approach}
 
-The PAC procedure works at the subgoal frame level, which is private
-to each thread. The key idea of the PAC data structure is then to
-extend subgoal frames with an auxiliary private chaining of answers
-for each subgoal call, in order to keep track of the answers already
-found for the call. Later, if a thread completes a subgoal's
+The PAC procedure works at the subgoal frame level. The key idea of
+PAC is to extend subgoal frames with an auxiliary private chaining of
+answers for each subgoal call, in order to keep track of the answers
+already found for the call. Later, if a thread completes a subgoal's
 evaluation, i.e, if the subgoal's table is marked as complete, its PAC
 is made public, so that from that point on all threads can use that
 chain in complete (only reading) mode. Figure~\ref{fig_tabtries_pcc}
@@ -330,7 +299,7 @@ evaluating the same tabled subgoal call $call\_i$.
 \end{figure}
 
 Figure~\ref{fig_tabtries_pcc}(a) shows then a situation where two
-threads, $T_1$ and $T_{k-1}$, are sharing the same subgoal entry for
+threads, $T_1$ and $T_{k-2}$, are sharing the same subgoal entry for
 the call $call\_i$ when the subgoal is still under evaluation, i.e.,
 the subgoal is not yet complete. The current state of the evaluation
 shows an answer trie with 3 answers found for the subgoal call
@@ -534,9 +503,8 @@ overhead ratio, the difference between both strategies is
 significantly higher than in the NS design. In conclusion,
 experimental results show that on average, the PAC strategy does not
 seem to have a big impact in the performance, however it still leaves
-room for further improvements. The difference between both local and
-batched scheduling is significantly higher in the FS design than in
-the NS design.
+room for further improvements, since the difference between local and
+batched scheduling is higher in the FS design than in the NS design.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -548,12 +516,11 @@ that local propagates answers only after all answer are found, while
 batched propagates answers immediately after they are found. Batched
 scheduling is a useful strategy in tabled logic programs that require
 an eager propagation of answers and/or do not require the complete set
-of answers to be found (partial evaluation of the search space). In
-this work, we have presented the PAC strategy, which is a simple and
-novel approach for combining the FS design with batched
-scheduling. PAC splits answer representation from answer propagation,
-and allows the first to be publicly shared among threads while the
-second to be private to each thread.
+of answers to be found. In this work, we have presented the PAC
+strategy, which is a simple and novel approach for combining the FS
+design with batched scheduling. PAC splits answer representation from
+answer propagation, and allows the first to be publicly shared among
+threads while the second to be private to each thread.
 
 Experimental results in worst-case scenarios showed that on average,
 the PAC strategy does not seem to have a big impact in the
