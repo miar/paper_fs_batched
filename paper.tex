@@ -57,9 +57,9 @@ competitive.\\
 
 \section{Introduction}
 
-Tabling~\cite{Chen-96} is an implementation technique that overcomes
-some limitations of traditional Prolog systems in dealing with
-redundant sub-computations and recursion. Tabling consists in storing
+Tabling~\cite{Chen-96} is a technique that overcomes some limitations
+of traditional Prolog systems in dealing with redundant
+sub-computations and recursion. Tabling consists in storing
 intermediate answers for subgoals in a proper data structure, called
 the \emph{table space}, so that they can be reused when a repeated
 subgoal appears during the resolution process. Tabling has become a
@@ -84,12 +84,12 @@ multithreading with tabling. Yap implements a SWI-Prolog compatible
 multithreading library~\cite{Wielemaker-03}. Yap's threads have their
 own execution stacks and only share the code area where predicates,
 records, flags and other global non-backtrackable data are stored. For
-tabled evaluation, a thread views its tables as private but, at the
-engine level, Yap has three designs~\cite{Areias-12a} that vary from a
-\emph{No-Sharing} (NS) design, where each thread allocates fully
-private tables for each new tabled subgoal called during its
-computation, to a \emph{Full-Sharing} (FS) design, where threads share
-the complete table space.
+multithreaded tabled evaluation, a thread views its tables as private
+but, at the engine level, Yap has three
+designs~\cite{Areias-12a}. These designs vary from a \emph{No-Sharing}
+(NS) design, where each thread allocates private tables for each new
+tabled subgoal called during its evaluation, to a \emph{Full-Sharing}
+(FS) design, where threads share the complete table space.
 
 The decision about the evaluation flow is determined by the
 \emph{scheduling strategy}. Different strategies may have a
@@ -118,27 +118,24 @@ not require the complete set of answers to be found.
 With the FS design, all tables are shared. Thus, since several threads
 can be inserting answers in the same table, when an answer already
 exists, it is not possible to determine if the answer is new or
-repeated for a certain thread without further support. However, for
-local scheduling this is not a problem because, for repeated and new
+repeated for a particular thread without further support. For local
+scheduling this is not a problem because, for repeated and new
 answers, local scheduling always fails. The problem is with batched
-scheduling that requires further support to work with the FS design
-since, with batched scheduling, only repeated answers should fail. We
-have thus to detect when a newly found answer is also a new answer for
-the thread at hand in order to ensure that new answers for a given
-subgoal call are correctly propagated once and only once to all
-thread's repeated calls.
+scheduling that requires that only the repeated answers should
+fail. Threads have then to detect during the evaluation whether an
+answer is new in their evaluation and must be propagated or an answer
+is repeated and the evaluation should fail.
  
 In this work, we propose an extension to the table space data
 structures, which we named \emph{Private Answer Chaining (PAC)}, as a
 way to keep track, per thread and subgoal call, of the answers that
-were already found and propagated to all repeated calls. We discuss in
-detail our proposal for extending the FS design with batched
-scheduling and we present a performance analysis comparison between
-local and batched scheduling. Experimental results show that, despite
-the extra PAC data structures required to support batched scheduling
-with the FS design, the execution time of the combination is still
-quite competitive when comparing against the FS design with local
-scheduling.
+were already found and already propagated. We discuss in detail our
+proposal for extending the FS design with batched scheduling and we
+present a performance analysis comparison between local and batched
+scheduling. Experimental results show that, despite the extra PAC data
+structures required to support batched scheduling with the FS design,
+the execution time of the combination is still quite competitive when
+comparing against the FS design with local scheduling. 
 
 The remainder of the paper is organized as follows. First, we briefly
 introduce some background and related work. Then, we describe our
@@ -150,21 +147,18 @@ experimental results and we end by outlining some conclusions.
 
 \section{Background}
 
-This section introduces some background needed for the following
-sections. 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{Table Space Organization}
-
 The basic idea behind tabling is straightforward: programs are
 evaluated by storing answers for tabled subgoals in an appropriate
-data space, called the \emph{table space}. Similar calls to tabled
-subgoals are not re-evaluated against the program clauses, instead
-they are resolved by consuming the answers already stored in their
-table entries. During this process, as further new answers are found,
-they are stored in their tables and later returned to all similar
-calls.
+data space, called the \emph{table space}. Similar calls\footnote{We
+  are considering \emph{variant-based tabling} similarity. Two tabled
+  subgoals A and B are variants if they can be made identical by
+  \emph{variable} renaming. For example, \emph{p(X,1,Y)} and
+  \emph{p(Y,1,Z)} are variants because both can be transformed into
+  \emph{p(VAR0,1,VAR1)}.} to tabled subgoals are not re-evaluated
+against the program clauses, instead they are resolved by consuming
+the answers already stored in their table entries. During this
+process, as further new answers are found, they are stored in their
+tables and later returned to all similar calls.
 
 \begin{wrapfigure}{r}{4.5cm}
 \vspace{-\intextsep}
@@ -237,15 +231,14 @@ remaining information is kept private to each thread in the
 
 \subsection{Scheduling Strategies}
 
-Local scheduling schedules the evaluation of a program in a
-breath-first manner. It favors backtracking first with completion
-instead of forward execution, leaving the consumption of answers for
-last. Local scheduling only allows a \emph{Cluster of Dependent
-  Subgoals} (CDS) to return answers after a fix-point has been
-reached~\cite{Freire-96}. In other words, local scheduling tries to
-keep a CDS as minimal as possible, thus creating less complex
-dependencies between subgoals, which causes a sooner completion of
-subgoals.
+Local scheduling evaluates a tabled logic program in a breath-first
+manner. It favors backtracking first with completion instead of
+forward execution, leaving the consumption of answers for last. Local
+scheduling only allows a \emph{Cluster of Dependent Subgoals} (CDS) to
+return answers after a fix-point has been reached~\cite{Freire-96}. In
+other words, local scheduling tries to keep a CDS as minimal as
+possible, thus creating less complex dependencies between subgoals,
+which causes a sooner completion of subgoals.
 
 On the other hand, batched scheduling schedules the evaluation of a
 program in a depth-first manner. It favors the forward execution first
@@ -417,7 +410,7 @@ scheduling.
 \label{alg_table_new_answer_batched}
 \end{algorithm}
 
-The algorithm receives two arguments: the newly answer found during
+The algorithm receives two arguments: the newly found answer during
 the evaluation (\emph{ANS}) and the subgoal frame which corresponds to
 the call at hand (\emph{SF}). The algorithm begins by
 checking/inserting the given \emph{ANS} into the answer trie
@@ -452,10 +445,10 @@ lowest bounds of performance that each design might achieve when
 applied/used in other real world applications/programs.
 
 Table~\ref{tab_batched_overhead} shows the overhead ratios, when
-compared with the NS design with 1 thread (running with local
-scheduling without TabMalloc), for the NS and FS designs, when running
-1, 8, 16, 24 and 32 threads, with TabMalloc and, local scheduling
-(column \emph{Local}) and batched scheduling (column \emph{Batched})
+comparing against the NS design with 1 thread (running with local
+scheduling without TabMalloc), for the NS and FS designs, with 1, 8,
+16, 24 and 32 threads, using TabMalloc and, local scheduling (column
+\emph{Local}) and batched scheduling (column \emph{Batched})
 strategies. In order to give a fair weight to each benchmark, the
 overhead ratio is calculated as follows. We begin by running ten times
 each benchmark $B$ for each design $D$ with $T$ threads. Then, we
