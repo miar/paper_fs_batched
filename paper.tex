@@ -9,16 +9,12 @@
 \usepackage{subfigure}
 \usepackage{url}
 \newcommand{\verbatimproperties}{\renewcommand{\baselinestretch}{0.85} \small}
-%\newcommand{\tableproperties}{\centering \big}
-\newcommand{\LINECOMMENT}[1]{$\triangleright$ #1}
-%\setlength{\belowcaptionskip}{-26pt}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
-\title{On Extending a Full-Sharing Multithreaded Tabling Design with
-  Batched Scheduling}
+\title{On Extending a Full-Sharing Multithreaded Tabling Design with Batched Scheduling}
 
 \author{Miguel Areias \and Ricardo Rocha}
 
@@ -31,23 +27,24 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{abstract}
-Tabling is a technique that overcomes some limitations of traditional
-Prolog systems in dealing with redundant sub-computations and
-recursion. Multithreading in Prolog is the ability to concurrently
-perform computations, in which each computation runs independently but
-shares the program clauses. When multithreading is combined with
-tabling, we have the best of both worlds, since we can exploit the
-combination of higher procedural control with higher declarative
-semantics. To support this combination, the Yap Prolog system has, at
-engine level, multiple designs that vary from a No-Sharing design,
-where each thread allocates fully private tables for each new tabled
-subgoal called during its computation, to a Full-Sharing design, where
-threads share the complete table space. Arguably, batched scheduling
-is one of the most successful tabling scheduling strategies. In this
-work, we propose the PAC strategy to combine the Full-Sharing design
-with batched scheduling. Experimental results show that, PAC is a good
-first approach, since with it the FS design remains quite
-competitive.\\
+  Tabling is a technique that overcomes some limitations of
+  traditional Prolog systems in dealing with redundant
+  sub-computations and recursion. When tabling is combined with
+  multithreading, we have the best of both worlds, since we can
+  exploit the combination of higher declarative semantics with higher
+  procedural control. To support this combination, the Yap Prolog
+  system has, at engine level, multiple designs that vary from a
+  No-Sharing design, where each thread allocates fully private tables,
+  to a Full-Sharing (FS) design, where threads share the complete
+  table space. In this work, we propose an extension to the table
+  space data structures, which we named \emph{Private Answer Chaining
+    (PAC)}, as way to support batched scheduling evaluation with the
+  FS design. Batched scheduling is one of the most successful tabling
+  scheduling strategies, known to be useful when a tabled logic
+  program requires an eager propagation of answers and/or do not
+  requires the complete set of answers to be found. Experimental
+  results show that PAC is a good first approach, since with it the FS
+  design remains quite competitive.\\
 
 \textbf{Keywords:} Logic Programming, Multithreading, Tabling, Scheduling.
 \end{abstract}
@@ -76,14 +73,14 @@ have the best of both worlds, since we can exploit the combination of
 higher procedural control with higher declarative semantics. To the
 best of our knowledge, XSB~\cite{Marques-08} and Yap~\cite{Areias-12a}
 are the only Prolog systems that support the combination of
-multithreading with tabling. Yap implements a SWI-Prolog compatible
-multithreading library~\cite{Wielemaker-03}. For multithreaded tabled
-evaluation, a thread views its tables as private but, at the engine
-level, Yap has three designs~\cite{Areias-12a}. These designs vary
-from a \emph{No-Sharing} (NS) design, where each thread allocates
-private tables for each new tabled subgoal called during its
-evaluation, to a \emph{Full-Sharing} (FS) design, where threads share
-the complete table space.
+multithreading with tabling. In this work, we will focus on Yap's
+implementation that follows a SWI-Prolog compatible multithreading
+library~\cite{Wielemaker-03}. For tabled evaluation, a thread views
+its tables as private but, at the engine level, Yap has three
+designs~\cite{Areias-12a}, which vary from a \emph{No-Sharing} (NS)
+design, where each thread allocates private tables for each new tabled
+subgoal call, to a \emph{Full-Sharing} (FS) design, where threads
+share the complete table space.
 
 The decision about the evaluation flow is determined by the
 \emph{scheduling strategy}. Different strategies may have a
@@ -110,21 +107,22 @@ With the FS design, all tables are shared. Thus, since several threads
 can be inserting answers in the same table, when an answer already
 exists, it is not possible to determine if the answer is new or
 repeated for a particular thread without further support. For local
-scheduling this is not a problem because, for repeated and new
-answers, local scheduling always fails. The problem is with batched
-scheduling that requires that only the repeated answers should
-fail. Threads have then to detect during the evaluation whether an
-answer is new in their evaluation and must be propagated or an answer
-is repeated and the evaluation should fail.
- 
+scheduling, this is not a problem since, for repeated and new answers,
+local scheduling always fails. The problem is with batched scheduling
+that requires that only the repeated answers should fail. Threads have
+then to detect, during batched evaluation, whether an answer is new
+and must be propagated or whether an answer is repeated and the
+evaluation should fail.
+
 In this work, we propose an extension to the table space data
 structures, which we named \emph{Private Answer Chaining (PAC)}, as a
 way to keep track, per thread and subgoal call, of the answers that
-were already found and already propagated. We discuss in detail our
-proposal for extending the FS design with batched scheduling and we
-present a performance analysis comparison between local and batched
+were already found and propagated. We discuss in detail our proposal
+for extending the FS design with batched scheduling and we present a
+performance analysis comparison between local and batched
 scheduling. Experimental results show that, despite the extra PAC data
-structures required, the execution time is still quite competitive.
+structures required to support batched scheduling with the FS design,
+the execution time of the combination is still quite competitive.
 
 The remainder of the paper is organized as follows. First, we briefly
 introduce some background and related work. Then, we describe our PAC
@@ -138,42 +136,43 @@ outlining some conclusions.
 
 The basic idea behind tabling is straightforward: programs are
 evaluated by storing answers for tabled subgoals in an appropriate
-data space, called the \emph{table space}. Similar calls\footnote{We
-  are considering \emph{variant-based tabling} similarity. Two tabled
-  subgoals A and B are variants if they can be made identical by
-  \emph{variable} renaming. For example, \emph{p(X,1,Y)} and
-  \emph{p(Y,1,Z)} are variants because both can be transformed into
-  \emph{p(VAR0,1,VAR1)}.} to tabled subgoals are not re-evaluated
-against the program clauses, instead they are resolved by consuming
-the answers already stored in their table entries. During this
-process, as further new answers are found, they are stored in their
-tables and later returned to all similar calls.
+data space, called the \emph{table space}. Repeated calls\footnote{We
+  are considering \emph{variant-based
+    tabling}~\cite{RamakrishnanIV-99}. Two tabled subgoals A and B are
+  variants if they can be made identical by variable renaming. For
+  example, \emph{p(X,1,Y)} and \emph{p(Y,1,Z)} are variants because
+  both can be transformed into \emph{p(VAR$_0$,1,VAR$_1$)}.} to tabled
+subgoals are not re-evaluated against the program clauses, instead
+they are resolved by consuming the answers already stored in their
+table entries. During this process, as further new answers are found,
+they are stored in their tables and later returned to all repeated
+calls.
 
 \begin{wrapfigure}{r}{4.5cm}
 \vspace{-\intextsep}
 \centering
-\includegraphics[width=4.5cm]{figures/table-space.pdf}
+\includegraphics[width=4.5cm]{figures/table_space.pdf}
 \caption{Table space organization}
 \label{fig_table_space}
-\vspace{-0.5\intextsep}
+\vspace{-\intextsep}
 \end{wrapfigure}
 
-Figure~\ref{fig_table_space} shows the table space organization of the
-Yap system. At the entry point we have the \emph{table entry} data
-structure. This structure is allocated when a tabled predicate is
-being compiled, so that a pointer to the table entry can be included
-in its compiled code. This guarantees that further calls to the
-predicate will access the table space starting from the same
-point. Below the table entry, we have the \emph{subgoal trie
-  structure}. Each different tabled subgoal call to the predicate at
-hand corresponds to a unique path through the subgoal trie structure,
-always starting from the table entry, passing by several subgoal trie
-data units, the \emph{subgoal trie nodes}, and reaching a leaf data
-structure, the \emph{subgoal frame}. The subgoal frame stores
-additional information about the subgoal and acts like an entry point
-to the \emph{answer trie structure}. Each unique path through the
-answer trie data units, the \emph{answer trie nodes}, corresponds to a
-different answer to the entry subgoal.
+Figure~\ref{fig_table_space} shows Yap's table space organization. At
+the entry point we have the \emph{table entry} data structure. This
+structure is allocated when a tabled predicate is being compiled, so
+that a pointer to the table entry can be included in its compiled
+code. This guarantees that further calls to the predicate will access
+the table space starting from the same point. Below the table entry,
+we have the \emph{subgoal trie structure}. Each different tabled
+subgoal call to the predicate at hand corresponds to a unique path
+through the subgoal trie structure, always starting from the table
+entry, passing by several subgoal trie data units, the \emph{subgoal
+  trie nodes}, and reaching a leaf data structure, the \emph{subgoal
+  frame}. The subgoal frame stores additional information about the
+subgoal and acts like an entry point to the \emph{answer trie
+  structure}. Each unique path through the answer trie data units, the
+\emph{answer trie nodes}, corresponds to a different answer to the
+entry subgoal.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -182,30 +181,29 @@ different answer to the entry subgoal.
 In Yap, a thread views its tables as private but, at the engine level,
 it implements three designs for concurrent tabling support that vary
 from a \emph{No-Sharing} (NS) design, where each thread allocates
-fully private tables for each new tabled subgoal called during its
-computation, to a \emph{Full-Sharing} (FS) design, where threads share
-the complete table space. Figure~\ref{fig_yap_mt_support} shows Yap's
-multithreaded table space organization for the NS and FS designs,
-where an interface layer abstracts the design being used at the engine
-level. The figure illustrates the main differences between the two
-designs for a situation where several threads are evaluating the same
-tabled subgoal call $call\_i$.
+fully private tables, to a \emph{Full-Sharing} (FS) design, where
+threads share the complete table
+space. Figure~\ref{fig_yap_mt_support} shows Yap's multithreaded table
+space organization for the NS and FS designs, where an interface layer
+abstracts the design being used at the engine level. The figure
+illustrates the main differences between the two designs for a
+situation where several threads are evaluating the same tabled subgoal
+call $call\_i$.
 
 \begin{figure}[!ht]
-\vspace{-0.5\intextsep}
+%\vspace{-\intextsep}
 \centering
-\includegraphics[width=9.5cm]{figures/yap-mt.pdf}
+\includegraphics[width=9.5cm]{figures/yap_mt.pdf}
 \caption{Yap's multithreaded table space organization for the NS and FS designs}
 \label{fig_yap_mt_support}
-\vspace{-0.5\intextsep}
+\vspace{-\bigskipamount}
 \end{figure}
 
-When using the NS design, each thread allocates fully private tables
-for each new subgoal called during its computation. One can observe
-that the table entry data structure still stores the common
-information for the predicate (such as the arity or the evaluation
-strategy), and then each thread $t$ has its own cell $T_t$ inside a
-\emph{bucket array} which points to the private data structures.
+When using the NS design, one can observe that the table entry data
+structure still stores the common information for the predicate (such
+as the arity or the scheduling strategy), and then each thread $t$ has
+its own cell $T_t$ inside a \emph{bucket array} which points to the
+private data structures.
 
 When using the FS design, the subgoal and answer trie structures and
 part of the subgoal frame information (the \emph{subgoal entry} data
@@ -243,69 +241,66 @@ scheduling can be an useful strategy in tabled logic programs that
 require an eager propagation of answers and/or do not require the
 complete set of answers to be found.
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Extending Full-Sharing with Batched Scheduling}
 
 \begin{wrapfigure}{r}{6.5cm}
-\vspace{-0.5\intextsep}
+\vspace{-\intextsep}
 \centering
-\includegraphics[width=6.5cm]{figures/pcc_key-idea.pdf}
-\caption{PAC splits answer representation and answer propagation}
-\label{fig_tabtries_pcc_key-idea}
-\vspace{-0.5\intextsep}
+\includegraphics[width=6.4cm]{figures/pac_overview.pdf}
+\caption{PAC overview}
+\label{fig_pac_overview}
+\vspace{-\intextsep}
 \end{wrapfigure}
 
 In this section, we describe our proposal to support the combination
-of batched scheduling with the FS design. In the FS design answer
-representation and answer propagation is stored in the answer trie
-data structure, thus threads are unable to know if they have or not
-have propagated an answer whenever it appears during the
-evaluation. To solve that, we propose an extension to the table space
-data structures, which we named \emph{Private Answer Chaining} (PAC),
-as a way to keep track, per thread and subgoal call, of the answers
-that were already found and propagated to the thread's repeated
-calls. Figure~\ref{fig_tabtries_pcc_key-idea} illustrates the key idea
-of the PAC strategy. In a nutshell, PAC splits answer representation
-from answer propagation, and allows the first to be kept publicly
-shared among threads in the answer trie data structure, and the second
-to be privately stored in the subgoal frame data structure of each
-thread.
+of batched scheduling with the FS design. In the original FS design,
+answer propagation and answer representation are both stored in the
+answer trie data structure, thus threads are unable to distinguish
+whether they have or not have propagated an answer already stored in
+the table space. To solve that, we propose an extension to the table
+space data structures, which we named \emph{Private Answer Chaining}
+(PAC), as a way to keep track, per thread and subgoal call, of the
+answers that were already found and propagated to the thread's
+repeated calls. Figure~\ref{fig_pac_overview} illustrates PAC's key
+idea. In a nutshell, PAC splits answer propagation from answer
+representation, and allows the first to be privately stored in the
+subgoal frame data structure of each thread, and the second to be kept
+publicly shared among threads in the answer trie data structure.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Our Approach}
 
-The PAC procedure works at the subgoal frame level. The key idea of
-PAC is to extend subgoal frames with an auxiliary private chaining of
-answers for each subgoal call, in order to keep track of the answers
-already found for the call. Later, if a thread completes a subgoal's
+The PAC procedure works at the subgoal frame level. The key idea is to
+extend subgoal frames with an auxiliary private chaining of answers
+for each subgoal call, in order to keep track of the answers already
+found for the call. Later, if a thread completes a subgoal's
 evaluation, i.e, if the subgoal's table is marked as complete, its PAC
 is made public, so that from that point on all threads can use that
-chain in complete (only reading) mode. Figure~\ref{fig_tabtries_pcc}
+chain in complete (only reading) mode. Figure~\ref{fig_pac_details}
 illustrates the new data structures involved in the implementation of
-our PAC's proposal for a situation where several threads are
+our PAC's proposal for a situation where different threads are
 evaluating the same tabled subgoal call $call\_i$.
 
 \begin{figure}[!ht]
-\vspace{-\intextsep}
+%\vspace{-\intextsep}
 \centering
-\includegraphics[width=10.5cm]{figures/pcc.pdf}
+\includegraphics[width=10.5cm]{figures/pac.pdf}
 \caption{PAC's data structures for (a) private and (b) public
   chaining}
-\label{fig_tabtries_pcc}
-\vspace{-0.5\intextsep}
+\label{fig_pac_details}
+\vspace{-\bigskipamount}
 \end{figure}
 
-Figure~\ref{fig_tabtries_pcc}(a) shows then a situation where two
-threads, $T_1$ and $T_{k-2}$, are sharing the same subgoal entry for
-the call $call\_i$ when the subgoal is still under evaluation, i.e.,
-the subgoal is not yet complete. The current state of the evaluation
-shows an answer trie with 3 answers found for the subgoal call
-$call\_i$. For the sake of simplicity, we are omitting the internal
-answer trie nodes and we are only showing the leaf nodes nodes $LN_1$,
-$LN_2$ and $LN_3$, in the figure.
+Figure~\ref{fig_pac_details}(a) shows then a situation where two
+threads, $T_1$ and $T_{k-2}$, are sharing the same subgoal entry for a
+call $call\_i$ still under evaluation, i.e., still not yet
+completed. The current state of the evaluation shows an answer trie
+with 3 answers found for $call\_i$. For the sake of simplicity, we are
+omitting the internal answer trie nodes and we are only showing the
+leaf nodes $LN_1$, $LN_2$ and $LN_3$ of each answer.
 
 With PAC support, the leaf nodes are not chained in the answer trie
 data structure, as usual. Now, the chaining process is done privately,
@@ -316,56 +311,57 @@ thread. In order to minimize PAC's impact, each answer node in the
 private chaining has only two fields: (i) an entry pointer, which
 points to the corresponding leaf node in the answer trie data
 structure; and (ii) a next pointer to chain the nodes in the private
-chaining. To maintain a good performance, when the number of answer
+chaining. To maintain good performance, when the number of answer
 nodes exceeds a certain threshold, we use a hash trie mechanism design
-similar to the one presented in the
-work~\cite{Areias-ijpp15}. However, since this mechanism is private to
-each thread, it does not require any concurrency support.
+similar to the one presented in~\cite{Areias-ijpp15}, but without
+concurrency support, since this mechanism is private to each thread.
 
-Going back to Fig.~\ref{fig_tabtries_pcc}(a), the PAC's data
-structures represent then two different situations where threads can
-be evaluating a subgoal call. Thread $T_1$ has only found one answer
-and it is using a direct answer chaining to access the node
-$LN_1$. Thread $T_{k-2}$ was already found three answers for the
-subgoal call and it is using the hash trie mechanism within its
-private chaining. Please note that the answer nodes are still chained
-between themselves, thus that repeated calls belonging to thread
-$T_{k-2}$ can consume the answers as in the original mechanism.
+PAC's data structures in Fig.~\ref{fig_pac_details}(a) represent then
+two different situations. Thread $T_1$ has only found one answer and
+it is using a direct answer chaining to access the leaf node
+$LN_1$. Thread $T_{k-2}$ was already found three answers for $call\_i$
+and it is using the hash trie mechanism within its private
+chaining. In the hash trie mechanism, the answer nodes are still
+chained between themselves, thus that repeated calls belonging to
+thread $T_{k-2}$ can consume the answers as in the original mechanism.
 
-Figure~\ref{fig_tabtries_pcc}(b) shows the state of the subgoal call
+Figure~\ref{fig_pac_details}(b) shows the state of the subgoal call
 after completion. When a thread $T$ completes a subgoal call, it frees
 its private consumer structures, but before doing that, it checks
 whether another thread as already marked the subgoal as completed. If
 no other thread has done that, then thread $T$ not only follows its
-private chaining mechanism as it would for freeing its private nodes,
-but also, follows the pointers to the answer trie leaf nodes in order
+private chaining mechanism, as it would for freeing its private nodes,
+but also follows the pointers to the answer trie leaf nodes in order
 to create a chain inside the answer trie. Since this procedure is done
 inside a critical region, no more than one thread can be doing this
-chaining process. Thus, in Fig.~\ref{fig_tabtries_pcc}(b), we are
-showing the situation where the subgoal call is completed and both
-threads $T_1$ and $T_{k-2}$ have already chained the leaf nodes inside
-the answer trie and removed their private chaining structures.
+chaining process. Thus, in Fig.~\ref{fig_pac_details}(b), we are
+showing the situation where the subgoal call $call\_i$ is completed
+and both threads $T_1$ and $T_{k-2}$ have already chained the leaf
+nodes inside the answer trie and removed their private chaining
+structures.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Implementations Details}
 
-At the tabling engine, the major difference between local and batched
-scheduling is in the tabling operation \emph{tabled new answer}, where
-we decide what to do when an answer is found during the
+The major difference between local and batched scheduling, at the
+engine level, is in the \emph{tabled new answer} operation, where we
+decide what to do when a new answer is found during the
 evaluation. This operation checks whether a newly found answer is
 already in the corresponding answer trie structure and, if not,
-inserts it. Algorithm~\ref{alg_table_new_answer_batched} shows how we
+inserts it. For local scheduling, it then fails and, for batched
+scheduling, it proceeds with forward
+execution. Algorithm~\ref{alg_table_new_answer_batched} shows how we
 have extended this operation to support the FS design with batched
 scheduling.
 
+\vspace{-\bigskipamount}
 \begin{algorithm} [!ht]
 \caption{tabled\_new\_answer(answer ANS, subgoal frame SF)}
-\algsetup{indent=0.65cm}
 \begin{algorithmic}[1]
   \STATE $leaf \gets check\_insert\_answer\_trie(ANS, SF)$
   \STATE $chain \gets check\_insert\_consumer\_chain(leaf, SF)$
-  \IF {$is\_answer\_marked\_as\_found(chain) = True$}
+  \IF {$is\_answer\_marked\_as\_found(chain)$}
     \RETURN $failure$
   \ELSE                                        [the answer is new]
     \STATE $mark\_answer\_as\_found(chain)$
@@ -378,6 +374,7 @@ scheduling.
 \end{algorithmic}
 \label{alg_table_new_answer_batched}
 \end{algorithm}
+\vspace{-\bigskipamount}
 
 The algorithm receives two arguments: the newly found answer during
 the evaluation (\emph{ANS}) and the subgoal frame which corresponds to
@@ -391,7 +388,7 @@ it tests whether the answer chain node already existed in the chain,
 i.e., if it was inserted or not by the current check/insert operation
 in order to return failure (line 4), or it proceeds with marking the
 answer \emph{ANS} has found (line 6). At the end (lines 7 to 10), it
-returns failure if local scheduling is active (line 8), otherwise,
+returns failure, if local scheduling is active (line 8), otherwise,
 batched scheduling is active, and it proceeds by propagating the
 answer \emph{ANS} to the current execution environment (line 10).
 
@@ -401,11 +398,11 @@ answer \emph{ANS} to the current execution environment (line 10).
 
 We now present experimental results about the usage of PAC in the FS
 design with batched scheduling. Since without PAC the FS design would
-not be able to be used with batched scheduling, to put results in
-perspective, we will be showing also the results for local scheduling
-and for the NS design. The environment for our experiments was a
-machine with 32-Core AMD Opteron (TM) Processor 6274 (2 sockets with
-16 cores each) with 32G of main memory, running the Linux kernel
+not be able to be used with batched scheduling, to put PAC's results
+in perspective, we will be showing also the results for local
+scheduling and for the NS design. The environment for our experiments
+was a machine with 32-Core AMD Opteron (TM) Processor 6274 (2 sockets
+with 16 cores each) with 32GB of main memory, running the Linux kernel
 3.16.7-200.fc20.x86\_64 with Yap Prolog 6.3. For the experiments, we
 used the \emph{TabMalloc} memory allocator~\cite{Areias-12b} and the
 set of benchmarks described in~\cite{Areias-12b}. These benchmarks
@@ -415,28 +412,29 @@ applied/used in other real world applications/programs.
 
 Table~\ref{tab_batched_overhead} shows the overhead ratios, when
 comparing against the NS design with 1 thread (running with local
-scheduling without TabMalloc), for the NS and FS designs, with 1, 8,
-16, 24 and 32 threads, using TabMalloc and, local scheduling (column
-\emph{Local}) and batched scheduling (column \emph{Batched})
-strategies. In order to give a fair weight to each benchmark, the
-overhead ratio is calculated as follows. We begin by running ten times
+scheduling and without TabMalloc), for the NS and FS designs with 1,
+8, 16, 24 and 32 threads, using local scheduling (column \emph{Local})
+and batched scheduling (column \emph{Batched}) strategies with
+TabMalloc. In order to give a fair weight to each benchmark, the
+overhead ratio is calculated as follows. We begin by running 10 times
 each benchmark $B$ for each design $D$ with $T$ threads. Then, we
 calculate the average of those ten runs and use that value ($D_{BT}$)
 to put it in perspective against the base time, which is the average
-of the ten runs of the NS design with $1$ thread ($NS_{B1}$). For
-that, we use the following formula for the overhead $O_{DBT} = D_{BT}
-/ NS_{B1}$. After calculating all the overheads $O_{DBT}$ for a
-certain design $D$ and number of threads $T$ corresponding to the
-several benchmarks $B$, we calculate the respective minimum, average,
-maximum and standard deviation overhead ratios.
+of 10 runs of the NS design with 1 thread ($NS_{B1}$). For that, we
+use the following formula for the overhead $O_{DBT} = D_{BT} /
+NS_{B1}$. After calculating all the overheads $O_{DBT}$ for a certain
+design $D$ and number of threads $T$ corresponding to the several
+benchmarks $B$, we calculate the respective minimum, average, maximum
+and standard deviation overhead ratios (rows \emph{Min}, \emph{Avg},
+\emph{Max} and \emph{StD} in Table~\ref{tab_batched_overhead}).
 
 \setlength{\tabcolsep}{12pt}
 \begin{table}[!ht]
 \centering
 \caption{Overhead ratios, when compared with the NS design with $1$
-  thread (running with local scheduling and without TabMalloc) for the NS
-  and FS designs (with TabMalloc), when running 1, 8, 16, 24 and 32
-  threads with local and batched scheduling (best ratios by row and by
+  thread (running with local scheduling and without TabMalloc) for the
+  NS and FS designs (with TabMalloc) when running 1, 8, 16, 24 and 32
+  threads with local and batched scheduling (best ratios by row and
   design for the Minimum, Average and Maximum are in bold)}
 \begin{tabular}{ll||cc|cc}
 \multicolumn{2}{c||}{\multirow{2}{*}{\bf Threads}} &
@@ -481,27 +479,24 @@ maximum and standard deviation overhead ratios.
 \label{tab_batched_overhead}
 \end{table}
 
-By observing Table~\ref{tab_batched_overhead}, we can see that, for 1
-thread, on the minimum overhead ratio, local scheduling is better on
-the NS design, while batched scheduling is better in the FS
-design. For the average and maximum overhead ratios, in the FS design,
-the best strategy is always the local scheduling. Additionally, the
-difference between local and batched scheduling in the FS is higher
-than in the NS design, which indicates the overhead that the PAC
-strategy brings to the FS design. Recall, whenever an answer is found
-during the evaluation, PAC requires threads to traverse their private
-consumer data structures to check if the answer was already
-propagated. This is the reason for difference in the overheads that we
-are observing in the experimental results. As we scale the number of
-threads, for the NS design both scheduling strategies have similar
-minimum, average and maximum overhead ratios. For the FS design, the
-best minimum overhead ratio is always for the batched scheduling. For
-the average and maximum overhead ratio, local scheduling is always
-better than batched scheduling. However, for the average ratio, the
-results between both strategies are quite close. For the maximum
-overhead ratio, the difference between both strategies is
-significantly higher than in the NS design. In conclusion,
-experimental results show that on average, the PAC strategy does not
+By observing Table~\ref{tab_batched_overhead}, we can see that batched
+scheduling always achieves the best minimum overhead ratio in the FS
+design but, for the average and maximum overhead ratios, the best
+strategy is always local scheduling. For the average and maximum
+overhead ratios, the difference between local and batched scheduling
+in the FS design is slightly higher than in the NS design, which can
+be read as an indication of the overhead that PAC introduces into the
+FS design. Recall that whenever an answer is found during the
+evaluation, PAC requires that threads traverse their private consumer
+data structures to check if the answer was already found (and propagated).
+
+As we increase the number of threads, for the NS design, both
+scheduling strategies show very close minimum, average and maximum
+overhead ratios. For the FS design, the differences are slightly
+higher. However, for the average overhead ratio, the results between
+both strategies are quite close, with batched scheduling being around
+10\% slower than local scheduling for the FS design. In summary, our
+experimental results show that, on average, the PAC strategy does not
 seem to have a big impact in the performance, however it still leaves
 room for further improvements, since the difference between local and
 batched scheduling is higher in the FS design than in the NS design.
@@ -511,18 +506,19 @@ batched scheduling is higher in the FS design than in the NS design.
 \section{Conclusions and Further Work}
 
 Local and batched scheduling are arguably two of the most well-known
-tabling scheduling techniques. The major difference between them is
-that local propagates answers only after all answer are found, while
-batched propagates answers immediately after they are found. Batched
-scheduling is a useful strategy in tabled logic programs that require
-an eager propagation of answers and/or do not require the complete set
-of answers to be found. In this work, we have presented the PAC
-strategy, which is a simple and novel approach for combining the FS
-design with batched scheduling. PAC splits answer representation from
-answer propagation, and allows the first to be publicly shared among
-threads while the second to be private to each thread.
+tabling scheduling strategies. The major difference between both is
+that local scheduling propagates answers only after all answers are
+found, while batched scheduling propagates answers immediately after
+they are found. Batched scheduling is a useful strategy in tabled
+logic programs that require an eager propagation of answers and/or do
+not require the complete set of answers to be found. In this work, we
+have presented the PAC strategy, which is a simple and novel approach
+for combining the FS design with batched scheduling. PAC splits answer
+representation from answer propagation, and allows the first to be
+publicly shared among threads while the second to be private to each
+thread.
 
-Experimental results in worst-case scenarios showed that on average,
+Experimental results in worst-case scenarios showed that, on average,
 the PAC strategy does not seem to have a big impact in the
 performance, however it still leaves room for further improvements
 specially in the extra structures required to control the propagated
@@ -534,19 +530,12 @@ problems that will allow us to improve and consolidate our framework.
 
 \section*{Acknowledgments}
 
-This work is funded by the project SIBILA (NORTE-07-0124-FEDER-000059)
-under the North Portugal Regional Operational Programme (ON.2 – O Novo
-Norte) and under the National Strategic Reference Framework (NSRF),
-through the European Regional Development Fund (ERDF), and by national
-funds, through the Portuguese funding agency, Fundação para a Ciência
-e a Tecnologia (FCT).
-
-%% This work is partially funded by the ERDF (European Regional
-%% Development Fund) through the COMPETE Programme and by FCT (Portuguese
-%% Foundation for Science and Technology) within projects SIBILA
-%% (NORTE-07-0124-FEDER-000059) and PEst
-%% (FCOMP-01-0124-FEDER-037281). Miguel Areias is funded by the FCT grant
-%% SFRH/BD/69673/2010.
+This work is partially funded by project SIBILA
+(NORTE-07-0124-FEDER-000059) under the North Portugal Regional
+Operational Programme (ON.2 – O Novo Norte) and under the National
+Strategic Reference Framework (NSRF), through the European Regional
+Development Fund (ERDF) and, by national funds, through the Portuguese
+Foundation for Science and Technology (FCT).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
