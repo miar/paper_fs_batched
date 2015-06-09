@@ -156,19 +156,11 @@ Faculty of Sciences, University of Porto, Portugal\\
   \end{sublista}
 \end{lista}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
-\titulo{Table Space - Example}
-
-\begin{center}
-  \multiinclude[format=pdf,graphics={scale=1.74}]{\figs/table_space_example}
-\end{center}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \titulo{YapTab-Mt - Advantages}
 
 \begin{lista}
-\item An \redtext{Abstraction layer} with \yellowtext{high-level
+\item An \redtext{abstraction layer} with \yellowtext{high-level
   constructors} that provide access to the \yellowtext{dynamic
   programming (tabling)} support:
   \begin{sublista}
@@ -187,15 +179,15 @@ Faculty of Sciences, University of Porto, Portugal\\
 \item Write complex \yellowtext{dynamic programming} applications
   using the \redtext{Prolog} programming language.
   \begin{sublista}
-
     \item \yellowtext{Procedures} in \redtext{Prolog} can be written
       as \yellowtext{logical specifications}, which are closer to
       \yellowtext{mathematical notation}.
   \end{sublista} 
 \end{lista}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\titulo{Internal Table Space Architecture}
+\titulo{Table Space - Internal Architecture}
 
 \newcommand{\lenitem}[2][.55\linewidth]{\parbox[t]{#1}{\strut #2\strut}}
 \mbox{}\hfill\raisebox{-\height}[0pt][0pt]{\includegraphics[scale=1.50]{\figs/table_space-0}}
@@ -203,19 +195,20 @@ Faculty of Sciences, University of Porto, Portugal\\
   \item \lenitem{\redtext{Table Entry}: stores generic about the
     predicates.}
     \begin{sublista}
-    \item \lenitem{\redtext{table} \yellowtext{predicate/2}.}
+    \item \lenitem{\redtext{:-table} \yellowtext{predicate/2}.}
     \end{sublista}
 \end{lista}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\titulo{Internal Table Space Architecture}
+\titulo{Table Space - Internal Architecture}
+
 
 \mbox{}\hfill\raisebox{-\height}[0pt][0pt]{\includegraphics[scale=1.50]{\figs/table_space-1}}
 \begin{lista}
   \item \lenitem{\redtext{Table Entry}: stores generic about the
     predicates.}
     \begin{sublista}
-    \item \lenitem{\redtext{table} \yellowtext{predicate/2}.}
+    \item \lenitem{\redtext{:-table} \yellowtext{predicate/2}.}
     \end{sublista}
   \item \lenitem{\redtext{Subgoal Trie Structure}: stores the
     \yellowtext{identifier} of the computations.}
@@ -225,13 +218,14 @@ Faculty of Sciences, University of Porto, Portugal\\
 \end{lista}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\titulo{Internal Table Space Architecture}
+\titulo{Table Space - Internal Architecture}
+
 \mbox{}\hfill\raisebox{-\height}[0pt][0pt]{\includegraphics[scale=1.50]{\figs/table_space-2}}
 \begin{lista}
   \item \lenitem{\redtext{Table Entry}: stores generic about the
     predicates.}
     \begin{sublista}
-    \item \lenitem{\redtext{table} \yellowtext{predicate/2}.}
+    \item \lenitem{\redtext{:-table} \yellowtext{predicate/2}.}
     \end{sublista}
   \item \lenitem{\redtext{Subgoal Trie Structure}: stores the
     \yellowtext{identifier} of the computations.}
@@ -245,6 +239,13 @@ Faculty of Sciences, University of Porto, Portugal\\
     \item \lenitem{\yellowtext{predicate}(computation\_id, \redtext{Answer}).}
    \end{sublista} 
 \end{lista}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
+\titulo{Table Space - Example}
+
+\begin{center}
+  \multiinclude[format=pdf,graphics={scale=1.74}]{\figs/table_space_example}
+\end{center}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \titulo{Tabling Scheduling Strategies - Local vs Batched}
@@ -336,7 +337,7 @@ Faculty of Sciences, University of Porto, Portugal\\
 
 \item We have presented the \redtext{PAC (Private Answer Chaining)}
   strategy that \yellowtext{enables} the \yellowtext{combination} of
-  \redtext{Batched scheduling} with \redtext{Full-Sharing}.
+  \redtext{batched scheduling} with \redtext{Full-Sharing}.
   \begin{sublista}
     \item Split's \yellowtext{answers representation (public)} and
       \yellowtext{answer propagation (private)}.
